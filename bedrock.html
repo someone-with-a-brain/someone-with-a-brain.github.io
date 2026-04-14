@@ -80,10 +80,10 @@
             <!-- IP Panel -->
             <div class="panel rounded-3xl p-16 text-center">
                 <div class="uppercase text-xs tracking-[3px] text-[#c8102e] mb-6 font-medium">SERVER ADDRESS</div>
-                <div id="bedrock-ip" class="ip-text text-5xl md:text-6xl font-bold text-white mb-6 break-all">
+                <div class="ip-text text-5xl md:text-6xl font-bold text-white mb-6 break-all">
                     bedrock.dreadfieldpvp.cloud-ip.cc
                 </div>
-                <div class="text-4xl font-bold text-[#c8102e] mb-10">PORT: 4819</div>
+                <div class="text-4xl font-bold text-[#c8102e] mb-10">PORT: <span class="text-white">4819</span></div>
                 
                 <button onclick="copyBedrock()" 
                         id="bedrock-btn"
@@ -106,7 +106,7 @@
 
     <script>
         function copyBedrock() {
-            const info = "bedrock.dreadfieldpvp.cloud-ip.cc\nPort: 19132";
+            const info = "bedrock.dreadfieldpvp.cloud-ip.cc\nPort: 4819";
             navigator.clipboard.writeText(info).then(() => {
                 const btn = document.getElementById('bedrock-btn');
                 const originalText = btn.innerHTML;
@@ -120,7 +120,7 @@
             });
         }
         
-        console.log('%c✅ Dreadfield PvP bedrock.html loaded successfully', 'color:#c8102e; font-weight:bold');
+        console.log('%c✅ Dreadfield PvP bedrock.html loaded (port 4819)', 'color:#c8102e; font-weight:bold');
     </script>
 </body>
 </html>
