@@ -1,1 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store • Dreadfield PvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        
+        :root {
+            --accent-red: #c8102e;
+        }
+        
+        * {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .glow-red {
+            text-shadow: 
+                0 0 10px var(--accent-red),
+                0 0 20px var(--accent-red),
+                0 0 40px rgba(200, 16, 46, 0.5);
+        }
+        
+        .panel {
+            background: #1a1a1a;
+            border: 2px solid #c8102e;
+            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #c8102e;
+            transform: translateY(-1px);
+        }
+        
+        body {
+            background: #0a0a0a;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+    <!-- NAVBAR -->
+    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
+                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
+                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            </a>
+            
+            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
+                <a href="index.html" class="nav-link">HOME</a>
+                <a href="java.html" class="nav-link">JAVA</a>
+                <a href="bedrock.html" class="nav-link">BEDROCK</a>
+                <a href="store.html" class="nav-link text-[#c8102e]">STORE</a>
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
+                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
+                LIVE SERVER
+            </div>
+        </div>
+    </nav>
 
+    <div class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-xl w-full text-center">
+            <h1 class="text-6xl font-bold tracking-tighter glow-red mb-3">DREADFIELD STORE</h1>
+            
+            <!-- COMING SOON SECTION -->
+            <div class="panel rounded-3xl p-16 mt-8">
+                <div class="text-8xl mb-6">🛡️</div>
+                <div class="text-5xl md:text-6xl font-black tracking-tighter text-[#c8102e] glow-red mb-4">
+                    COMING SOON
+                </div>
+                <p class="text-2xl text-gray-300 mb-10">
+                    Ranks • Kits • Cosmetics<br>
+                    Perks dropping shortly
+                </p>
+                
+                <div class="inline-flex items-center gap-3 bg-black border border-[#c8102e]/50 text-[#c8102e] px-8 py-4 rounded-2xl text-sm font-medium uppercase tracking-widest">
+                    <div class="w-3 h-3 bg-[#c8102e] rounded-full animate-pulse"></div>
+                    STAY TUNED
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-12">
+                The store will be live very soon.<br>
+                Thank you for supporting Dreadfield PvP.
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#111111] py-8 border-t border-[#c8102e]/10 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-6">
+            © 2026 Dreadfield PvP
+        </div>
+    </footer>
+
+    <script>
+        console.log('%c✅ Dreadfield PvP store.html loaded (COMING SOON)', 'color:#c8102e; font-weight:bold');
+    </script>
+</body>
+</html>
