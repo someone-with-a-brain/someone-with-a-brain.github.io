@@ -1,9 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-   <meta http-equiv="refresh" content="0; url='https://discord.com/invite/6DZSj3YTH5'" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord • Dreadfield PvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        
+        :root {
+            --accent-red: #c8102e;
+        }
+        
+        * {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .glow-red {
+            text-shadow: 
+                0 0 10px var(--accent-red),
+                0 0 20px var(--accent-red),
+                0 0 40px rgba(200, 16, 46, 0.5);
+        }
+        
+        .panel {
+            background: #1a1a1a;
+            border: 2px solid #c8102e;
+            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #c8102e;
+            transform: translateY(-1px);
+        }
+        
+        body {
+            background: #0a0a0a;
+        }
+    </style>
 </head>
-<body>
-   <p>You will be redirected to discord soon!</p>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+    <!-- NAVBAR (matches all your other pages) -->
+    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
+                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
+                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            </a>
+            
+            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
+                <a href="index.html" class="nav-link">HOME</a>
+                <a href="java.html" class="nav-link">JAVA</a>
+                <a href="bedrock.html" class="nav-link">BEDROCK</a>
+                <a href="store.html" class="nav-link">STORE</a>
+                <a href="pages.html" class="nav-link">FORUMS</a>
+                <a href="discord.html" class="nav-link text-[#c8102e]">DISCORD</a>
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
+                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
+                COMMUNITY
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-xl w-full text-center">
+            <div class="panel rounded-3xl p-16">
+                <!-- Discord Icon -->
+                <div class="text-8xl mb-8">💬</div>
+                
+                <h1 class="text-6xl font-bold tracking-tighter glow-red mb-3">DREADFIELD DISCORD</h1>
+                <p class="text-2xl text-gray-300 mb-10">Join the arena. Talk strategy.<br>Meet the squad.</p>
+                
+                <!-- Redirecting message -->
+                <div id="redirect-status" class="text-[#c8102e] text-xl font-medium flex items-center justify-center gap-3 mb-12">
+                    <div class="w-4 h-4 border-2 border-[#c8102e] border-t-transparent rounded-full animate-spin"></div>
+                    REDIRECTING TO DISCORD...
+                </div>
+                
+                <!-- Manual button (in case redirect is blocked) -->
+                <a id="discord-button" 
+                   href="https://discord.com/invite/6DZSj3YTH5"
+                   target="_blank"
+                   class="block w-full bg-[#c8102e] hover:bg-[#e02a3f] text-white font-bold py-7 text-2xl rounded-3xl transition-all active:scale-95 shadow-lg">
+                    JOIN DISCORD NOW →
+                </a>
+                
+                <p class="text-xs text-gray-500 mt-10">
+                    You will be taken to our official Discord server instantly.<br>
+                    If nothing happens, click the button above.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#111111] py-8 border-t border-[#c8102e]/10 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-6">
+            © 2026 Dreadfield PvP • Official Discord
+        </div>
+    </footer>
+
+    <script>
+        // Auto-redirect after 2 seconds (smooth and instant feel)
+        setTimeout(() => {
+            window.location.href = "https://discord.com/invite/6DZSj3YTH5";
+        }, 2200);
+
+        // Optional: update status text just before redirect
+        setTimeout(() => {
+            const status = document.getElementById('redirect-status');
+            if (status) status.innerHTML = `✅ OPENING DISCORD...`;
+        }, 1800);
+
+        console.log('%c✅ Dreadfield PvP discord.html loaded – redirecting to official Discord', 'color:#c8102e; font-weight:bold');
+    </script>
 </body>
 </html>
