@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community • Dreadfield PvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        
+        :root {
+            --accent-red: #c8102e;
+        }
+        
+        * {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .glow-red {
+            text-shadow: 
+                0 0 10px var(--accent-red),
+                0 0 20px var(--accent-red),
+                0 0 40px rgba(200, 16, 46, 0.5);
+        }
+        
+        .panel {
+            background: #1a1a1a;
+            border: 2px solid #c8102e;
+            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #c8102e;
+            transform: translateY(-1px);
+        }
+        
+        .post-card {
+            transition: all 0.2s ease;
+        }
+        
+        body {
+            background: #0a0a0a;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+    <!-- NAVBAR (consistent with your other pages) -->
+    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
+                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
+                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            </a>
+            
+            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
+                <a href="index.html" class="nav-link">HOME</a>
+                <a href="java.html" class="nav-link">JAVA</a>
+                <a href="bedrock.html" class="nav-link">BEDROCK</a>
+                <a href="store.html" class="nav-link">STORE</a>
+                <a href="pages.html" class="nav-link text-[#c8102e]">FORUMS</a>
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
+                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
+                COMMUNITY
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
+        <div class="text-center mb-10">
+            <h1 class="text-6xl font-bold tracking-tighter glow-red">DREADFIELD FORUMS</h1>
+            <p class="text-xl text-gray-400 mt-3">Talk • Share • Compete</p>
+        </div>
+
+        <!-- USER PROFILE BAR -->
+        <div id="profile-bar" class="panel rounded-3xl p-6 mb-8 flex items-center justify-between hidden">
+            <div class="flex items-center gap-4">
+                <div id="username-display" class="text-2xl font-bold"></div>
+                <div id="crown" class="text-3xl hidden">👑</div>
+                <div id="ip-display" class="text-xs text-gray-500 font-mono"></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="changeUsername()" 
+                        class="px-6 py-2 bg-[#1a1a1a] hover:bg-[#222] border border-[#c8102e] rounded-2xl text-sm font-medium">
+                    CHANGE USERNAME
+                </button>
+                <button onclick="logoutUser()" 
+                        class="px-6 py-2 bg-[#1a1a1a] hover:bg-[#222] border border-[#c8102e]/50 rounded-2xl text-sm font-medium text-gray-400">
+                    LOG OUT
+                </button>
+            </div>
+        </div>
+
+        <!-- POSTS FEED -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4 px-2">
+                <h2 class="text-2xl font-semibold">Latest Posts</h2>
+                <button onclick="refreshPosts()" class="text-sm text-[#c8102e] hover:underline flex items-center gap-1">
+                    <span>REFRESH</span>
+                    🔄
+                </button>
+            </div>
+            
+            <div id="posts-container" class="space-y-6"></div>
+        </div>
+
+        <!-- NEW POST FORM -->
+        <div class="panel rounded-3xl p-8">
+            <h3 class="text-xl font-medium mb-4">Post something to the community</h3>
+            <textarea id="post-input" rows="3"
+                      class="w-full bg-[#111111] border border-[#c8102e]/30 focus:border-[#c8102e] rounded-3xl p-6 text-white placeholder-gray-500 resize-y"
+                      placeholder="Type your message here..."></textarea>
+            
+            <div class="flex justify-between items-center mt-6">
+                <div id="char-count" class="text-xs text-gray-500">0 / 500 characters</div>
+                <button onclick="submitPost()" 
+                        class="bg-[#c8102e] hover:bg-[#e02a3f] px-10 py-4 rounded-3xl font-bold text-lg flex items-center gap-3 transition-all active:scale-95">
+                    POST TO FORUMS
+                    <span class="text-2xl">⚔️</span>
+                </button>
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-gray-500 mt-8">
+            Automod active • All posts are filtered for inappropriate language, slurs, racism, and political content.<br>
+            Your username &amp; posts are tied to your IP address.
+        </p>
+    </div>
+
+    <!-- USERNAME MODAL -->
+    <div id="username-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[9999]">
+        <div class="panel max-w-md w-full mx-4 rounded-3xl p-10 text-center">
+            <h2 class="text-4xl font-bold glow-red mb-6">Welcome to Dreadfield Forums</h2>
+            <p class="text-gray-300 mb-8">Choose your username.<br>It will be permanently linked to your IP.</p>
+            
+            <input id="modal-username-input" type="text" maxlength="20"
+                   class="w-full bg-[#111111] border border-[#c8102e] focus:border-[#e02a3f] rounded-3xl px-8 py-6 text-center text-2xl placeholder-gray-500 mb-8"
+                   placeholder="Your username">
+            
+            <button onclick="saveUsername()" 
+                    class="w-full bg-[#c8102e] hover:bg-[#e02a3f] py-6 rounded-3xl font-bold text-xl">
+                CONFIRM USERNAME
+            </button>
+            
+            <p id="modal-error" class="text-red-400 text-sm mt-6 hidden"></p>
+        </div>
+    </div>
+
+    <script>
+        // ====================== CONFIG ======================
+        const ADMIN_IP = "68.44.205.85";
+        
+        // AUTOMOD – ADD YOUR BANNED WORDS HERE (slurs, racist terms, political keywords, etc.)
+        const forbiddenWords = [
+            // Example format (add your own – currently empty so nothing is blocked until you fill it):
+            // "trump", "biden", "election", "politics", "racistword", "slur", etc.
+        ];
+
+        function isClean(text) {
+            if (!text) return true;
+            const lower = text.toLowerCase().trim();
+            return !forbiddenWords.some(word => lower.includes(word.toLowerCase()));
+        }
+        
+        // ====================== GLOBAL VARS ======================
+        let currentIP = null;
+        let currentUser = null; // { username: string, isAdmin: boolean }
+        
+        // ====================== IP DETECTION ======================
+        async function fetchIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch (e) {
+                console.warn("Could not fetch IP – using fallback");
+                return "unknown-ip";
+            }
+        }
+        
+        // ====================== USER MANAGEMENT ======================
+        function loadUser(ip) {
+            const key = `dreadfield_user_${ip}`;
+            const saved = localStorage.getItem(key);
+            
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                // Force admin status if it's the owner IP
+                if (ip === ADMIN_IP) currentUser.isAdmin = true;
+            } else {
+                // First time → show modal
+                showUsernameModal();
+                return;
+            }
+            
+            renderProfileBar();
+        }
+        
+        function showUsernameModal() {
+            const modal = document.getElementById('username-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('modal-username-input').focus();
+        }
+        
+        function saveUsername() {
+            const input = document.getElementById('modal-username-input').value.trim();
+            const errorEl = document.getElementById('modal-error');
+            
+            if (!input || input.length < 3) {
+                errorEl.textContent = "Username must be at least 3 characters";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            
+            if (!isClean(input)) {
+                errorEl.textContent = "Automod blocked this username (inappropriate language)";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            
+            currentUser = {
+                username: input,
+                isAdmin: (currentIP === ADMIN_IP)
+            };
+            
+            const key = `dreadfield_user_${currentIP}`;
+            localStorage.setItem(key, JSON.stringify(currentUser));
+            
+            document.getElementById('username-modal').classList.add('hidden');
+            renderProfileBar();
+            refreshPosts();
+        }
+        
+        function renderProfileBar() {
+            const bar = document.getElementById('profile-bar');
+            bar.classList.remove('hidden');
+            
+            document.getElementById('username-display').innerHTML = `
+                ${currentUser.username}
+            `;
+            
+            const crown = document.getElementById('crown');
+            if (currentUser.isAdmin) {
+                crown.classList.remove('hidden');
+                crown.innerHTML = '👑 <span class="text-xs align-super">(ADMIN)</span>';
+            } else {
+                crown.classList.add('hidden');
+            }
+            
+            document.getElementById('ip-display').textContent = `IP: ${currentIP}`;
+        }
+        
+        function changeUsername() {
+            if (confirm("Change username? (It will still be locked to your IP)")) {
+                localStorage.removeItem(`dreadfield_user_${currentIP}`);
+                currentUser = null;
+                showUsernameModal();
+            }
+        }
+        
+        function logoutUser() {
+            if (confirm("Log out? You will be prompted for a new username on next visit.")) {
+                localStorage.removeItem(`dreadfield_user_${currentIP}`);
+                location.reload();
+            }
+        }
+        
+        // ====================== FORUM POSTS ======================
+        function getPosts() {
+            const saved = localStorage.getItem('dreadfield_forum_posts');
+            return saved ? JSON.parse(saved) : [];
+        }
+        
+        function savePosts(posts) {
+            localStorage.setItem('dreadfield_forum_posts', JSON.stringify(posts));
+        }
+        
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            const posts = getPosts().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="panel rounded-3xl p-12 text-center text-gray-400">
+                        No posts yet.<br>Be the first to talk!
+                    </div>`;
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => {
+                const isOwnPost = post.ip === currentIP;
+                const isAdminPost = post.isAdmin || false;
+                const canDelete = currentUser?.isAdmin || isOwnPost;
+                
+                return `
+                <div class="post-card panel rounded-3xl p-6">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-lg">${post.username}</span>
+                            ${isAdminPost ? '<span class="text-2xl">👑</span>' : ''}
+                            <span class="text-xs font-mono text-gray-500">${new Date(post.timestamp).toLocaleString()}</span>
+                        </div>
+                        
+                        ${canDelete ? `
+                        <div class="flex gap-2">
+                            <button onclick="deletePost('${post.id}')" 
+                                    class="text-xs px-4 py-1 bg-red-900 hover:bg-red-700 rounded-2xl">DELETE</button>
+                            ${currentUser?.isAdmin && post.ip !== currentIP ? `
+                            <button onclick="wipeUser('${post.ip}')" 
+                                    class="text-xs px-4 py-1 bg-orange-900 hover:bg-orange-700 rounded-2xl">WIPE USER</button>` : ''}
+                        </div>` : ''}
+                    </div>
+                    <p class="mt-4 text-gray-200 leading-relaxed">${post.content}</p>
+                </div>`;
+            }).join('');
+        }
+        
+        function refreshPosts() {
+            renderPosts();
+        }
+        
+        function submitPost() {
+            if (!currentUser) {
+                alert("Please set your username first.");
+                return;
+            }
+            
+            const input = document.getElementById('post-input');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            if (content.length > 500) {
+                alert("Post too long (max 500 characters)");
+                return;
+            }
+            
+            if (!isClean(content)) {
+                alert("🚫 Automod blocked this post.\n\nReason: Inappropriate language, slurs, racism, or political content is not allowed.");
+                return;
+            }
+            
+            const posts = getPosts();
+            posts.push({
+                id: Date.now().toString(),
+                username: currentUser.username,
+                ip: currentIP,
+                content: content,
+                timestamp: new Date().toISOString(),
+                isAdmin: currentUser.isAdmin
+            });
+            
+            savePosts(posts);
+            input.value = '';
+            renderPosts();
+            
+            // Small success animation
+            console.log('%c✅ Post published', 'color:#c8102e');
+        }
+        
+        function deletePost(id) {
+            if (!currentUser?.isAdmin && !confirm("Delete this post?")) return;
+            
+            let posts = getPosts();
+            posts = posts.filter(p => p.id !== id);
+            savePosts(posts);
+            renderPosts();
+        }
+        
+        function wipeUser(ipToWipe) {
+            if (!currentUser?.isAdmin || !confirm("⚠️ Permanently wipe this user?\nAll their posts will be deleted and they will have to choose a new username next visit.")) return;
+            
+            // Delete all their posts
+            let posts = getPosts();
+            posts = posts.filter(p => p.ip !== ipToWipe);
+            savePosts(posts);
+            
+            // Delete their saved username
+            localStorage.removeItem(`dreadfield_user_${ipToWipe}`);
+            
+            alert("✅ User wiped successfully.");
+            renderPosts();
+        }
+        
+        // ====================== INIT ======================
+        window.onload = async function () {
+            currentIP = await fetchIP();
+            console.log('%c🔍 Detected IP:', 'color:#c8102e', currentIP);
+            
+            loadUser(currentIP);
+            renderPosts();
+            
+            // Live character counter
+            const textarea = document.getElementById('post-input');
+            textarea.addEventListener('input', () => {
+                document.getElementById('char-count').textContent = `${textarea.value.length} / 500 characters`;
+            });
+            
+            console.log('%c✅ Dreadfield Forums (pages.html) loaded with IP-based usernames, admin crown, delete/wipe tools, and automod', 'color:#c8102e; font-weight:bold');
+        };
+    </script>
+</body>
+</html>
