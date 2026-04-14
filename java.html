@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Edition • Dreadfield PvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        
+        :root {
+            --accent-red: #c8102e;
+        }
+        
+        * {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .glow-red {
+            text-shadow: 
+                0 0 10px var(--accent-red),
+                0 0 20px var(--accent-red);
+        }
+        
+        .panel {
+            background: #1a1a1a;
+            border: 2px solid #c8102e;
+            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #c8102e;
+            transform: translateY(-1px);
+        }
+        
+        body {
+            background: #0a0a0a;
+        }
+        
+        .ip-text {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+    <!-- NAVBAR (same as index) -->
+    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
+                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
+                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            </a>
+            
+            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
+                <a href="index.html" class="nav-link">HOME</a>
+                <a href="java.html" class="nav-link text-[#c8102e]">JAVA</a>
+                <a href="bedrock.html" class="nav-link">BEDROCK</a>
+                <a href="store.html" class="nav-link">STORE</a>
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
+                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
+                LIVE SERVER
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-2xl w-full">
+            <div class="text-center mb-12">
+                <h1 class="text-6xl font-bold tracking-tighter glow-red">JAVA EDITION</h1>
+                <p class="text-gray-400 mt-3">Connect instantly • 1.21+</p>
+            </div>
+            
+            <!-- IP Panel -->
+            <div class="panel rounded-3xl p-16 text-center">
+                <div class="uppercase text-xs tracking-[3px] text-[#c8102e] mb-6 font-medium">SERVER ADDRESS</div>
+                <div id="java-ip" class="ip-text text-5xl md:text-6xl font-bold text-white mb-10 break-all">
+                    play.dreadfieldpvp.cloud-ip.cc
+                </div>
+                
+                <button onclick="copyIP('play.dreadfieldpvp.cloud-ip.cc', 'java-btn')" 
+                        id="java-btn"
+                        class="w-full max-w-xs mx-auto bg-[#c8102e] hover:bg-[#e02a3f] text-white font-semibold py-6 rounded-2xl text-lg flex items-center justify-center gap-3 transition-all active:scale-95">
+                    <span>COPY IP TO CLIPBOARD</span>
+                    📋
+                </button>
+                
+                <p class="text-xs text-gray-500 mt-8">Click the button above to copy • Paste in Minecraft launcher</p>
+            </div>
+            
+            <div class="mt-8 text-center text-xs text-gray-500 flex justify-center gap-6">
+                <div>✅ No mods required</div>
+                <div>✅ Vanilla + plugins</div>
+                <div>✅ KitPvP • Factions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#111111] py-8 border-t border-[#c8102e]/10 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-6">
+            © 2026 Dreadfield PvP • Java IP: play.dreadfieldpvp.cloud-ip.cc
+        </div>
+    </footer>
+
+    <script>
+        function copyIP(ip, btnId) {
+            navigator.clipboard.writeText(ip).then(() => {
+                const btn = document.getElementById(btnId);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `✅ COPIED!`;
+                btn.style.backgroundColor = '#22c55e';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            });
+        }
+        
+        console.log('%c✅ Dreadfield PvP java.html loaded successfully', 'color:#c8102e; font-weight:bold');
+    </script>
+</body>
+</html>
