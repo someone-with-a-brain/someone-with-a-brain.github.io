@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>ADMIN BACKUP • Dreadfield PvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        
+        :root {
+            --accent-red: #c8102e;
+        }
+        
+        * {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        body {
+            background: #000000;
+        }
+        
+        .glow-red {
+            text-shadow: 
+                0 0 10px var(--accent-red),
+                0 0 30px var(--accent-red);
+        }
+        
+        .panel {
+            background: #1a1a1a;
+            border: 3px solid #c8102e;
+            box-shadow: 0 0 40px rgba(200, 16, 46, 0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white p-6">
+    <div class="max-w-md w-full text-center">
+        <!-- WARNING HEADER -->
+        <div class="inline-flex items-center gap-3 bg-[#c8102e] text-white text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-3xl mb-8 shadow-inner">
+            <span class="text-lg">⚠️</span>
+            ADMIN ONLY
+            <span class="text-lg">⚠️</span>
+        </div>
+        
+        <h1 class="text-4xl font-black tracking-tighter glow-red mb-3">DREADFIELD BACKUP IP</h1>
+        <p class="text-red-400 mb-12">This page is for server administrators only.<br>Unauthorized use is strictly prohibited.</p>
+        
+        <!-- Backup IP Panel -->
+        <div class="panel rounded-3xl p-12">
+            <div class="text-xs uppercase tracking-[2px] text-[#c8102e] mb-4">EMERGENCY BACKUP SERVER</div>
+            <div id="backup-ip" class="font-mono text-4xl font-bold mb-8 text-white">
+                backup.dreadfieldpvp.cloud-ip.cc
+            </div>
+            
+            <button onclick="copyBackup()" 
+                    class="w-full bg-black hover:bg-[#c8102e] text-white border border-[#c8102e] py-5 rounded-2xl font-semibold flex items-center justify-center gap-3 transition-all">
+                COPY BACKUP IP
+                <span class="text-xl">📋</span>
+            </button>
+        </div>
+        
+        <p class="text-[10px] text-gray-600 mt-12">
+            For use only during attacks or main server downtime.<br>
+            This page is visually hidden but URL-accessible.
+        </p>
+    </div>
+
+    <script>
+        function copyBackup() {
+            navigator.clipboard.writeText("backup.dreadfieldpvp.cloud-ip.cc").then(() => {
+                alert("✅ Backup IP copied to clipboard");
+            });
+        }
+        
+        console.log('%c🔒 Dreadfield PvP admin-backup.html loaded (ADMIN ONLY)', 'color:#c8102e; font-weight:bold');
+    </script>
+</body>
+</html>
