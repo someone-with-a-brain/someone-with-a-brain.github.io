@@ -51,6 +51,10 @@
         body {
             background: #0a0a0a;
         }
+
+        .status-dot {
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
@@ -70,9 +74,9 @@
                 <a href="store.html" class="nav-link">STORE</a>
             </div>
             
-            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
-                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
-                LIVE SERVER
+            <div id="navbar-status" class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20 cursor-pointer" onclick="refreshGlobalStatus()">
+                <div id="navbar-dot" class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span id="navbar-text">CHECKING...</span>
             </div>
         </div>
     </nav>
@@ -87,20 +91,17 @@
                 Survive the Field.<br>Dominate the Arena.
             </p>
             
-            <!-- Main Action Buttons -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
                 <!-- Java Button -->
-                <a href="java.html" 
-                   class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
+                <a href="java.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
                     <div class="text-5xl mb-4">☠️</div>
                     <div class="text-2xl font-semibold mb-1">Java Edition</div>
                     <div class="text-[#c8102e] text-sm tracking-widest">PLAY NOW</div>
                     <div class="mt-6 text-xs opacity-70 group-hover:opacity-100">play.dreadfieldpvp.cloud-ip.cc</div>
                 </a>
                 
-                <!-- Bedrock Button -->
-                <a href="bedrock.html" 
-                   class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
+                <!-- Bedrock Button (UPDATED PORT) -->
+                <a href="bedrock.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
                     <div class="text-5xl mb-4">📱</div>
                     <div class="text-2xl font-semibold mb-1">Bedrock Edition</div>
                     <div class="text-[#c8102e] text-sm tracking-widest">PLAY NOW</div>
@@ -108,8 +109,7 @@
                 </a>
                 
                 <!-- Store Button -->
-                <a href="store.html" 
-                   class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
+                <a href="store.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
                     <div class="text-5xl mb-4">🛒</div>
                     <div class="text-2xl font-semibold mb-1">Dreadfield Store</div>
                     <div class="text-[#c8102e] text-sm tracking-widest">GET PERKS</div>
@@ -134,8 +134,50 @@
     </footer>
 
     <script>
-        // Tailwind script already loaded
-        console.log('%c✅ Dreadfield PvP index.html loaded successfully', 'color:#c8102e; font-weight:bold');
+        async function checkMinecraftStatus(address, isBedrock = false) {
+            try {
+                let apiUrl = isBedrock 
+                    ? `https://api.mcsrvstat.us/bedrock/3/${address}` 
+                    : `https://api.mcsrvstat.us/3/${address}`;
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("API error");
+                return await response.json();
+            } catch (e) {
+                return { online: false };
+            }
+        }
+
+        async function updateNavbarStatus() {
+            const statusDiv = document.getElementById('navbar-status');
+            const dot = document.getElementById('navbar-dot');
+            const text = document.getElementById('navbar-text');
+
+            dot.className = "w-2 h-2 bg-gray-400 rounded-full status-dot";
+            text.textContent = "CHECKING...";
+
+            const data = await checkMinecraftStatus('play.dreadfieldpvp.cloud-ip.cc', false);
+
+            if (data.online) {
+                dot.className = "w-2 h-2 bg-emerald-400 rounded-full status-dot";
+                text.innerHTML = `ONLINE <span class="text-emerald-400">(${data.players?.online || 0}/${data.players?.max || 0})</span>`;
+                statusDiv.style.borderColor = "#10b981";
+            } else {
+                dot.className = "w-2 h-2 bg-red-500 rounded-full";
+                text.textContent = "OFFLINE";
+                statusDiv.style.borderColor = "#c8102e";
+            }
+        }
+
+        async function refreshGlobalStatus() {
+            const statusDiv = document.getElementById('navbar-status');
+            statusDiv.style.opacity = "0.5";
+            await updateNavbarStatus();
+            statusDiv.style.opacity = "1";
+        }
+
+        window.onload = updateNavbarStatus;
+
+        console.log('%c✅ Dreadfield PvP index.html loaded with live server ping (Bedrock port 4819)', 'color:#c8102e; font-weight:bold');
     </script>
 </body>
 </html>
