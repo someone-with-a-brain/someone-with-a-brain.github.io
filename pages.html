@@ -130,7 +130,6 @@
             <div class="flex items-center gap-4 mb-4 md:mb-0">
                 <div id="username-display" class="text-3xl font-black tracking-tight text-white"></div>
                 <div id="crown" class="text-3xl hidden drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]">👑</div>
-                <div id="ip-display" class="text-xs text-gray-500 font-mono bg-black/50 px-3 py-1 rounded-full border border-gray-800"></div>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="changeUsername()" 
@@ -175,7 +174,7 @@
 
         <p class="text-center text-xs text-gray-600 mt-12 font-mono border-t border-gray-800 pt-8">
             Automod active • Posts filtered for inappropriate language.<br>
-            Network traffic is anonymously routed via CNAME.
+            Network traffic is anonymously routed.
         </p>
     </div>
 
@@ -205,17 +204,11 @@
                 <div class="w-6 h-6 bg-gradient-to-br from-[#ff1e38] to-[#8b0015] rounded rotate-45 flex items-center justify-center text-white text-[10px] font-black shadow-[0_0_10px_rgba(255,30,56,0.3)]">⚔️</div>
                 <span class="font-bold tracking-widest text-[#ff1e38]">DREADFIELD</span>
             </div>
-            © 2026 Dreadfield PvP • All Rights Reserved<br>
-            <span class="opacity-40 mt-1 block">Not affiliated with Mojang Studios</span>
+            © 2026 Dreadfield PvP • Safe Backend Linking Active
         </div>
     </footer>
 
     <script>
-        // ====================== CONFIG ======================
-        // DNS Target domain pointing to the Cloudflare trycloudflare.com URL
-        const CNAME_DOMAIN = "dashboard.dreadfieldpvp.cloud-ip.cc";
-        const ADMIN_IP = "68.44.205.85"; // Owner external IP
-
         // AUTOMOD
         const forbiddenWords = [
             "nigger", "faggot", "chink", "spic" // Admin provided example blocked word list
@@ -227,55 +220,61 @@
             return !forbiddenWords.some(word => lower.includes(word.toLowerCase()));
         }
         
-        let currentIP = "unknown";
+        // GITHUB SYNC
+        const GITHUB_RAW_URL = "https://raw.githubusercontent.com/someone-with-a-brain/someone-with-a-brain.github.io/main/api_config.json";
+
         let currentUser = null; 
         let API_BASE_URL = null;
+        let isNetworkAdmin = false;
 
-        // ====================== DNS DISCOVERY ======================
+        // ====================== GITHUB DISCOVERY ======================
         async function discoverAPI() {
             const statusEl = document.getElementById('connection-status');
-            statusEl.innerHTML = "Resolving DNS CNAME <span class='animate-pulse'>...</span>";
+            statusEl.innerHTML = "Fetching secure API routing payload <span class='animate-pulse'>...</span>";
             
             try {
-                // Fetch the CNAME record for your dashboard domain using Google DNS over HTTPS
-                const res = await fetch(`https://dns.google/resolve?name=${CNAME_DOMAIN}&type=CNAME`);
+                const res = await fetch(`${GITHUB_RAW_URL}?nocache=${Date.now()}`); // cache buster
+                if(!res.ok) throw new Error("Could not fetch API configuration");
+                
                 const data = await res.json();
                 
-                if (data.Answer && data.Answer.length > 0) {
-                    let target = data.Answer[0].data; 
-                    // Example: "random-words.trycloudflare.com."
-                    if (target.endsWith('.')) target = target.slice(0, -1);
-                    API_BASE_URL = `https://${target}`;
-                    statusEl.innerHTML = `<span class="text-emerald-500 font-bold">Connected tracking: ${target}</span>`;
+                if (data.api_url) {
+                    API_BASE_URL = data.api_url;
+                    statusEl.innerHTML = `<span class="text-emerald-500 font-bold">Securely connected to routing system</span>`;
                     return true;
                 } else {
-                    throw new Error("No CNAME record found");
+                    throw new Error("No URL found in config");
                 }
             } catch (e) {
-                console.error("DNS Discovery failed:", e);
-                statusEl.innerHTML = `<span class="text-[#ff1e38]">Network Offline: DNS CNAME (${CNAME_DOMAIN}) not matching backend.</span>`;
+                console.error("Discovery failed:", e);
+                statusEl.innerHTML = `<span class="text-[#ff1e38]">Network Offline: Backend API routing down.</span>`;
                 return false;
             }
         }
         
-        // ====================== IP DETECTION ======================
-        async function fetchIP() {
+        // ====================== ADMIN VERIFICATION ======================
+        async function checkAdminStatus() {
+            if (!API_BASE_URL) return;
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                currentIP = data.ip;
-                document.getElementById('ip-display').textContent = currentIP;
-            } catch (e) {
-                console.warn("Could not fetch IP");
+                const res = await fetch(`${API_BASE_URL}/api/me`);
+                if(res.ok) {
+                    const data = await res.json();
+                    isNetworkAdmin = data.isAdmin;
+                }
+            } catch(e) {
+                console.warn("Could not verify admin status", e);
             }
         }
-        
+
         // ====================== USER MANAGEMENT ======================
-        function loadUser() {
+        async function loadUser() {
             const saved = localStorage.getItem('dreadfield_user');
             if (saved) {
                 currentUser = JSON.parse(saved);
-                // We allow the backend to verify true admin status, but we show the crown locally
+                
+                // If API is connected, ask the backend if we are truly the admin based on our IP
+                if(API_BASE_URL) await checkAdminStatus();
+                
                 renderProfileBar();
                 document.getElementById('post-form-container').classList.remove('hidden');
             } else {
@@ -298,22 +297,18 @@
                 errorEl.classList.remove('hidden');
                 return;
             }
-            
             if (!isClean(input)) {
                 errorEl.textContent = "Automod blocked this callsign";
                 errorEl.classList.remove('hidden');
                 return;
             }
             
-            currentUser = {
-                username: input,
-                isAdmin: (currentIP === ADMIN_IP) // Optional frontend check
-            };
-            
+            currentUser = { username: input };
             localStorage.setItem('dreadfield_user', JSON.stringify(currentUser));
             document.getElementById('username-modal').classList.add('hidden');
-            renderProfileBar();
-            document.getElementById('post-form-container').classList.remove('hidden');
+            
+            // Reload user checks after setting
+            loadUser();
         }
         
         function renderProfileBar() {
@@ -322,19 +317,18 @@
             document.getElementById('username-display').textContent = currentUser.username;
             
             const crown = document.getElementById('crown');
-            if (currentUser.isAdmin) {
+            if (isNetworkAdmin) {
                 crown.classList.remove('hidden');
             } else {
                 crown.classList.add('hidden');
             }
-            
-            if (currentIP !== "unknown") document.getElementById('ip-display').textContent = `IP: ${currentIP}`;
         }
         
         function changeUsername() {
             if (confirm("Change callsign?")) {
                 localStorage.removeItem('dreadfield_user');
                 currentUser = null;
+                isNetworkAdmin = false;
                 document.getElementById('profile-bar').classList.add('hidden');
                 document.getElementById('post-form-container').classList.add('hidden');
                 showUsernameModal();
@@ -343,14 +337,7 @@
         
         // ====================== API COMMUNICATION ======================
         async function fetchPosts() {
-            if (!API_BASE_URL) {
-                document.getElementById('posts-container').innerHTML = `
-                    <div class="glass-panel text-center p-12 text-gray-500 rounded-3xl border border-dashed border-gray-700">
-                        Backend unreachable. Cannot load messages.
-                    </div>
-                `;
-                return;
-            }
+            if (!API_BASE_URL) return;
 
             try {
                 const res = await fetch(`${API_BASE_URL}/api/posts`);
@@ -358,10 +345,9 @@
                 const posts = await res.json();
                 renderPosts(posts);
             } catch (e) {
-                console.error("Failed to fetch posts:", e);
                 document.getElementById('posts-container').innerHTML = `
                     <div class="glass-panel text-center p-12 text-[#ff1e38] rounded-3xl border border-[#ff1e38]/30">
-                        Failed to connect to backend server. Make sure Cloudflare Tunnel is running.
+                        Failed to connect to backend server endpoint.
                     </div>
                 `;
             }
@@ -393,8 +379,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: currentUser.username,
-                        content: content,
-                        isAdmin: currentUser.isAdmin
+                        content: content
+                        // Removed isAdmin from payload because the backend verifies the IP securely!
                     })
                 });
                 
@@ -417,10 +403,15 @@
             if (!API_BASE_URL || !confirm("Delete this post?")) return;
             
             try {
-                await fetch(`${API_BASE_URL}/api/posts/${id}`, { method: 'DELETE' });
-                await fetchPosts();
+                // If the user isn't really the admin on the backend, this API call will return 403 Forbidden anyway!
+                const res = await fetch(`${API_BASE_URL}/api/posts/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    await fetchPosts();
+                } else {
+                    alert("Access Denied: You cannot delete this.");
+                }
             } catch (e) {
-                alert("Failed to delete post.");
+                alert("Network Error.");
             }
         }
         
@@ -428,11 +419,15 @@
             if (!API_BASE_URL || !confirm("⚠️ Permanently wipe this user?")) return;
             
             try {
-                await fetch(`${API_BASE_URL}/api/users/${ipToWipe}`, { method: 'DELETE' });
-                alert("User wiped via backend API.");
-                await fetchPosts();
+                const res = await fetch(`${API_BASE_URL}/api/users/${ipToWipe}`, { method: 'DELETE' });
+                if(res.ok) {
+                    alert("User wiped via backend API.");
+                    await fetchPosts();
+                } else {
+                    alert("Access Denied: Action restricted to Server Administrators.");
+                }
             } catch (e) {
-                alert("Failed to wipe user.");
+                alert("Network Error.");
             }
         }
         
@@ -449,27 +444,27 @@
             }
             
             container.innerHTML = posts.map(post => {
-                const isOwnPost = post.ip === currentIP;
-                const isAdminPost = post.isAdmin || false;
-                const canDelete = currentUser?.isAdmin || isOwnPost;
+                // Determine if we should show delete buttons. Since the IP is hidden natively,
+                // we only show the delete buttons if 'isNetworkAdmin' is true. We don't verify if it's "our own post".
+                const canDelete = isNetworkAdmin;
                 
                 return `
                 <div class="post-card glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-3">
-                            <span class="font-black text-lg ${isAdminPost ? 'text-[#ff1e38]' : 'text-white'}">${post.username}</span>
-                            ${isAdminPost ? '<span class="text-xl drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]" title="Network Admin">👑</span>' : ''}
+                            <span class="font-black text-lg ${post.isAdmin ? 'text-[#ff1e38]' : 'text-white'}">${post.username}</span>
+                            ${post.isAdmin ? '<span class="text-xl drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]" title="Network Admin">👑</span>' : ''}
                             <span class="text-xs font-mono text-gray-600 ml-2 bg-black/40 px-2 py-0.5 rounded">${new Date(post.timestamp).toLocaleString()}</span>
-                            ${currentUser?.isAdmin && post.ip ? `<span class="text-[10px] text-gray-700 bg-gray-900 px-1 rounded">${post.ip}</span>` : ''}
+                            ${isNetworkAdmin && post.ip ? `<span class="text-[10px] text-gray-700 bg-gray-900 px-1 rounded">IP Recorded</span>` : ''}
                         </div>
                         
                         ${canDelete ? `
                         <div class="flex gap-2">
                             <button onclick="deletePost('${post.id}')" 
                                     class="text-[10px] font-bold px-3 py-1 bg-red-900/50 hover:bg-red-700/80 border border-red-900 text-red-200 rounded-lg transition-colors">DELETE</button>
-                            ${currentUser?.isAdmin && post.ip !== currentIP ? `
+                            ${post.ip ? `
                             <button onclick="wipeUser('${post.ip}')" 
-                                    class="text-[10px] font-bold px-3 py-1 bg-orange-900/50 hover:bg-orange-700/80 border border-orange-900 text-orange-200 rounded-lg transition-colors">BAN IP</button>` : ''}
+                                    class="text-[10px] font-bold px-3 py-1 bg-orange-900/50 hover:bg-orange-700/80 border border-orange-900 text-orange-200 rounded-lg transition-colors">BAN USER (WIPE)</button>` : ''}
                         </div>` : ''}
                     </div>
                     <p class="mt-4 text-gray-300 font-medium leading-relaxed whitespace-pre-wrap">${post.content}</p>
@@ -479,25 +474,21 @@
         
         // ====================== INIT ======================
         document.addEventListener('DOMContentLoaded', async () => {
-            // Live character counter
             const textarea = document.getElementById('post-input');
             textarea.addEventListener('input', () => {
                 document.getElementById('char-count').textContent = `${textarea.value.length} / 500 characters`;
             });
             
-            // Initial sequence
-            await fetchIP();
-            loadUser();
-            
             const apiFound = await discoverAPI();
             if (apiFound) {
-                fetchPosts();
-                // Check every 10 seconds for new messages automatically
-                setInterval(fetchPosts, 10000);
+                // Must load user AFTER discovering API so it can check admin status securely
+                await loadUser();
+                await fetchPosts();
+                setInterval(fetchPosts, 10000); // Polling every 10s
             } else {
                 document.getElementById('posts-container').innerHTML = `
                     <div class="glass-panel text-center p-12 text-[#ff1e38] rounded-3xl border border-[#ff1e38]/30">
-                        Failed to resolve Network CNAME. (${CNAME_DOMAIN})<br>Update your CNAME to point to the active backend tunnel.
+                        Failed to resolve backend settings.
                     </div>
                 `;
             }

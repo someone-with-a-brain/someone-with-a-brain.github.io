@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Panel Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: #ffffff; font-family: monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .auth-box { border: 1px solid rgba(255, 30, 56, 0.3); background: rgba(15, 15, 15, 0.8); padding: 40px; border-radius: 20px; text-align: center; }
+        .spinner { border: 3px solid rgba(255, 30, 56, 0.1); border-left-color: #ff1e38; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="auth-box">
+        <div class="spinner"></div>
+        <h2 style="color: #ff1e38; margin-bottom: 10px; font-weight: bold; letter-spacing: 2px;">AUTHENTICATING LOCATION</h2>
+        <p style="color: gray; font-size: 12px;" id="status-text">Fetching secure routing payload...</p>
+    </div>
+
+    <script>
+        const GITHUB_RAW_URL = "https://raw.githubusercontent.com/someone-with-a-brain/someone-with-a-brain.github.io/main/api_config.json";
+
+        async function initializePanel() {
+            try {
+                const res = await fetch(`${GITHUB_RAW_URL}?nocache=${Date.now()}`);
+                if (!res.ok) throw new Error("Could not find configuration");
+                
+                const data = await res.json();
+                if (data.api_url) {
+                    document.getElementById('status-text').innerHTML = "Handshake complete. Redirecting to network dashboard...";
+                    setTimeout(() => {
+                        window.location.href = data.api_url;
+                    }, 500);
+                } else {
+                    document.getElementById('status-text').innerHTML = "System Offline.";
+                }
+            } catch (e) {
+                document.getElementById('status-text').innerHTML = "<span style='color:red;'>Access Denied / Core Offline</span>";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePanel);
+    </script>
+</body>
+</html>
