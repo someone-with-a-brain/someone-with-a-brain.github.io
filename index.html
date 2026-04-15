@@ -7,68 +7,117 @@
     <title>Dreadfield PvP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
         
         :root {
-            --accent-red: #c8102e;
+            --accent-red: #ff1e38;
+            --accent-dark: #8b0015;
+            --bg-color: #050505;
         }
         
         * {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        
-        .glow-red {
-            text-shadow: 
-                0 0 10px var(--accent-red),
-                0 0 20px var(--accent-red),
-                0 0 40px rgba(200, 16, 46, 0.5);
-        }
-        
-        .panel {
-            background: #1a1a1a;
-            border: 2px solid #c8102e;
-            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
-        }
-        
-        .nav-link {
-            transition: all 0.2s ease;
-        }
-        
-        .nav-link:hover {
-            color: #c8102e;
-            transform: translateY(-1px);
-        }
-        
-        .hero-button {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .hero-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(200, 16, 46, 0.6);
+            font-family: 'Outfit', system-ui, sans-serif;
         }
         
         body {
-            background: #0a0a0a;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 30, 56, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(139, 0, 21, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: #ffffff;
+        }
+
+        .glow-red {
+            text-shadow: 
+                0 0 20px rgba(255, 30, 56, 0.4),
+                0 0 40px rgba(255, 30, 56, 0.2);
+        }
+
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 30, 56, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-button {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,30,56,0.1), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .hero-button:hover::before {
+            left: 150%;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--accent-red);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.5),
+                0 0 20px rgba(255, 30, 56, 0.3) inset,
+                0 0 30px rgba(255, 30, 56, 0.4);
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: -4px; left: 0;
+            background-color: var(--accent-red);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-red);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
 
         .status-dot {
-            animation: pulse 2s infinite;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
     <!-- NAVBAR -->
-    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+    <nav class="glass-panel sticky top-0 z-50 border-b border-[#ff1e38]/20">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
-                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
-                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-gradient-to-br from-[#ff1e38] to-[#8b0015] rounded rotate-45 flex items-center justify-center text-white text-xl font-black shadow-[0_0_15px_rgba(255,30,56,0.5)] group-hover:rotate-[225deg] transition-transform duration-700">⚔️</div>
+                <div class="flex flex-col leading-none">
+                    <div class="text-2xl font-black tracking-tighter glow-red">DREADFIELD</div>
+                    <div class="text-sm font-bold tracking-[0.2em] text-gray-400">NETWORK</div>
+                </div>
             </a>
             
-            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
-                <a href="index.html" class="nav-link">HOME</a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-gray-300">
+                <a href="index.html" class="nav-link text-white">HOME</a>
                 <a href="java.html" class="nav-link">JAVA</a>
                 <a href="bedrock.html" class="nav-link">BEDROCK</a>
                 <a href="store.html" class="nav-link">STORE</a>
@@ -76,62 +125,77 @@
                 <a href="discord.html" class="nav-link">DISCORD</a>
             </div>
             
-            <div id="navbar-status" class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20 cursor-pointer" onclick="refreshGlobalStatus()">
-                <div id="navbar-dot" class="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <span id="navbar-text">CHECKING...</span>
+            <div id="navbar-status" class="flex items-center gap-3 text-xs uppercase bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg border border-[#ff1e38]/30 cursor-pointer hover:bg-black/60 transition-all font-bold" onclick="refreshGlobalStatus()">
+                <div id="navbar-dot" class="w-2.5 h-2.5 bg-gray-500 rounded-full"></div>
+                <span id="navbar-text" class="tracking-wider">CHECKING...</span>
             </div>
         </div>
     </nav>
 
     <!-- HERO -->
-    <div class="flex-1 flex items-center justify-center px-6 py-16">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-7xl md:text-8xl font-bold tracking-tighter glow-red mb-4">
-                DREADFIELD PVP
+    <div class="flex-1 flex items-center justify-center px-4 py-20 relative">
+        <div class="max-w-5xl mx-auto text-center z-10 relative">
+            <div class="inline-block px-4 py-1.5 rounded-full border border-[#ff1e38]/30 bg-[#ff1e38]/10 text-[#ff1e38] text-xs font-bold tracking-widest uppercase mb-8 backdrop-blur-sm shadow-[0_0_20px_rgba(255,30,56,0.2)]">
+                🔥 SEASON 1 NOW LIVE 🔥
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter glow-red mb-6 uppercase leading-none">
+                Survive The Field.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">Dominate The Arena.</span>
             </h1>
-            <p class="text-2xl md:text-3xl text-gray-300 mb-12 max-w-md mx-auto">
-                Survive the Field.<br>Dominate the Arena.
+            
+            <p class="text-lg md:text-xl text-gray-400 mb-16 max-w-2xl mx-auto font-light leading-relaxed">
+                Step into the most intense, custom-coded PvP network. Factions, KitPvP, and Hardcore survival designed for the elite. 
+                <strong class="text-white font-semibold">Will you rise to the top?</strong>
             </p>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <!-- Java Button -->
-                <a href="java.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
-                    <div class="text-5xl mb-4">☠️</div>
-                    <div class="text-2xl font-semibold mb-1">Java Edition</div>
-                    <div class="text-[#c8102e] text-sm tracking-widest">PLAY NOW</div>
-                    <div class="mt-6 text-xs opacity-70 group-hover:opacity-100">play.dreadfieldpvp.cloud-ip.cc</div>
+                <a href="java.html" class="hero-button glass-panel group flex flex-col items-center rounded-3xl p-8 text-center text-decoration-none">
+                    <div class="text-6xl mb-5 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">☠️</div>
+                    <div class="text-2xl font-black mb-2 text-white group-hover:text-[#ff1e38] transition-colors">Java Edition</div>
+                    <div class="text-[#ff1e38] text-xs font-bold tracking-[0.2em] mb-4">PLAY NOW</div>
+                    <div class="mt-auto px-4 py-2 bg-black/50 rounded-xl text-xs font-mono text-gray-400 group-hover:text-white border border-transparent group-hover:border-[#ff1e38]/30 w-full transition-all">play.dreadfieldpvp.cloud-ip.cc</div>
                 </a>
                 
-                <!-- Bedrock Button (UPDATED PORT) -->
-                <a href="bedrock.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
-                    <div class="text-5xl mb-4">📱</div>
-                    <div class="text-2xl font-semibold mb-1">Bedrock Edition</div>
-                    <div class="text-[#c8102e] text-sm tracking-widest">PLAY NOW</div>
-                    <div class="mt-6 text-xs opacity-70 group-hover:opacity-100">bedrock.dreadfieldpvp.cloud-ip.cc:4819</div>
+                <!-- Bedrock Button -->
+                <a href="bedrock.html" class="hero-button glass-panel group flex flex-col items-center rounded-3xl p-8 text-center">
+                    <div class="text-6xl mb-5 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">📱</div>
+                    <div class="text-2xl font-black mb-2 text-white group-hover:text-[#ff1e38] transition-colors">Bedrock Edition</div>
+                    <div class="text-[#ff1e38] text-xs font-bold tracking-[0.2em] mb-4">PLAY NOW</div>
+                    <div class="mt-auto px-4 py-2 bg-black/50 rounded-xl text-xs font-mono text-gray-400 group-hover:text-white border border-transparent group-hover:border-[#ff1e38]/30 w-full transition-all truncate">bedrock.dreadfieldpvp.cloud-ip.cc:4819</div>
                 </a>
                 
                 <!-- Store Button -->
-                <a href="store.html" class="hero-button group flex flex-col items-center bg-[#1a1a1a] hover:bg-[#222222] border border-[#c8102e] rounded-3xl p-8 text-center transition-all">
-                    <div class="text-5xl mb-4">🛒</div>
-                    <div class="text-2xl font-semibold mb-1">Dreadfield Store</div>
-                    <div class="text-[#c8102e] text-sm tracking-widest">GET PERKS</div>
-                    <div class="mt-6 text-xs opacity-70 group-hover:opacity-100">Ranks • Kits • Cosmetics</div>
+                <a href="store.html" class="hero-button glass-panel group flex flex-col items-center rounded-3xl p-8 text-center">
+                    <div class="text-6xl mb-5 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">🛒</div>
+                    <div class="text-2xl font-black mb-2 text-white group-hover:text-[#ff1e38] transition-colors">Dreadfield Store</div>
+                    <div class="text-[#ff1e38] text-xs font-bold tracking-[0.2em] mb-4">GET PERKS</div>
+                    <div class="mt-auto px-4 py-2 bg-black/50 rounded-xl text-xs font-mono text-gray-400 group-hover:text-white border border-transparent group-hover:border-[#ff1e38]/30 w-full transition-all">Ranks • Kits • Cosmetics</div>
                 </a>
             </div>
             
-            <div class="mt-16 text-xs uppercase tracking-[2px] text-gray-500 flex items-center justify-center gap-8">
-                <div>NO LAG • 1.21+ • KITPVP • FACTIONS</div>
-                <div class="w-px h-3 bg-gray-600"></div>
-                <div>24/7 • COMPETITIVE • HARDCORE</div>
+            <div class="mt-20 text-xs font-bold uppercase tracking-[0.3em] text-gray-500 flex flex-wrap items-center justify-center gap-4 md:gap-8">
+                <span>⚡ NO LAG</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#ff1e38]/50"></span>
+                <span>🔥 1.21+</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#ff1e38]/50"></span>
+                <span>⚔️ KITPVP & FACTIONS</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#ff1e38]/50"></span>
+                <span>🏆 COMPETITIVE</span>
             </div>
         </div>
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-[#111111] py-8 border-t border-[#c8102e]/10 text-center text-xs text-gray-500">
+    <footer class="glass-panel py-8 border-t border-[#ff1e38]/20 text-center text-xs text-gray-500 mt-auto">
         <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                <div class="w-6 h-6 bg-gradient-to-br from-[#ff1e38] to-[#8b0015] rounded rotate-45 flex items-center justify-center text-white text-[10px] font-black shadow-[0_0_10px_rgba(255,30,56,0.3)]">⚔️</div>
+                <span class="font-bold tracking-widest text-[#ff1e38]">DREADFIELD</span>
+            </div>
             © 2026 Dreadfield PvP • All Rights Reserved<br>
-            <span class="opacity-50">Not affiliated with Mojang Studios</span>
+            <span class="opacity-40 mt-1 block">Not affiliated with Mojang Studios</span>
         </div>
     </footer>
 
@@ -154,32 +218,32 @@
             const dot = document.getElementById('navbar-dot');
             const text = document.getElementById('navbar-text');
 
-            dot.className = "w-2 h-2 bg-gray-400 rounded-full status-dot";
+            dot.className = "w-2.5 h-2.5 bg-gray-500 rounded-full";
             text.textContent = "CHECKING...";
+            statusDiv.style.borderColor = "rgba(255, 30, 56, 0.3)";
 
             const data = await checkMinecraftStatus('play.dreadfieldpvp.cloud-ip.cc', false);
 
             if (data.online) {
-                dot.className = "w-2 h-2 bg-emerald-400 rounded-full status-dot";
-                text.innerHTML = `ONLINE <span class="text-emerald-400">(${data.players?.online || 0}/${data.players?.max || 0})</span>`;
-                statusDiv.style.borderColor = "#10b981";
+                dot.className = "w-2.5 h-2.5 bg-emerald-400 rounded-full status-dot shadow-[0_0_10px_rgba(16,185,129,0.8)]";
+                text.innerHTML = `ONLINE <span class="text-emerald-400 ml-1">(${data.players?.online || 0}/${data.players?.max || 0})</span>`;
+                statusDiv.style.borderColor = "rgba(16, 185, 129, 0.4)";
+                statusDiv.style.backgroundColor = "rgba(16, 185, 129, 0.05)";
             } else {
-                dot.className = "w-2 h-2 bg-red-500 rounded-full";
+                dot.className = "w-2.5 h-2.5 bg-[#ff1e38] rounded-full shadow-[0_0_10px_rgba(255,30,56,0.8)]";
                 text.textContent = "OFFLINE";
-                statusDiv.style.borderColor = "#c8102e";
+                statusDiv.style.borderColor = "rgba(255, 30, 56, 0.4)";
+                statusDiv.style.backgroundColor = "rgba(255, 30, 56, 0.05)";
             }
         }
 
         async function refreshGlobalStatus() {
             const statusDiv = document.getElementById('navbar-status');
-            statusDiv.style.opacity = "0.5";
+            statusDiv.classList.add('opacity-50', 'scale-95');
             await updateNavbarStatus();
-            statusDiv.style.opacity = "1";
+            statusDiv.classList.remove('opacity-50', 'scale-95');
         }
 
-        window.onload = updateNavbarStatus;
-
-        console.log('%c✅ Dreadfield PvP index.html loaded with live server ping (Bedrock port 4819)', 'color:#c8102e; font-weight:bold');
     </script>
 </body>
 </html>

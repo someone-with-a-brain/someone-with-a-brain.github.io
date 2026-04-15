@@ -6,81 +6,107 @@
     <title>Discord • Dreadfield PvP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
         
         :root {
-            --accent-red: #c8102e;
+            --accent-red: #ff1e38;
+            --accent-dark: #8b0015;
+            --bg-color: #050505;
         }
         
         * {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        
-        .glow-red {
-            text-shadow: 
-                0 0 10px var(--accent-red),
-                0 0 20px var(--accent-red),
-                0 0 40px rgba(200, 16, 46, 0.5);
-        }
-        
-        .panel {
-            background: #1a1a1a;
-            border: 2px solid #c8102e;
-            box-shadow: 0 0 30px rgba(200, 16, 46, 0.3);
-        }
-        
-        .nav-link {
-            transition: all 0.2s ease;
-        }
-        
-        .nav-link:hover {
-            color: #c8102e;
-            transform: translateY(-1px);
+            font-family: 'Outfit', system-ui, sans-serif;
         }
         
         body {
-            background: #0a0a0a;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 30, 56, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(139, 0, 21, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: #ffffff;
+        }
+
+        .glow-red {
+            text-shadow: 
+                0 0 20px rgba(255, 30, 56, 0.4),
+                0 0 40px rgba(255, 30, 56, 0.2);
+        }
+
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 30, 56, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: -4px; left: 0;
+            background-color: var(--accent-red);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-red);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
-    <!-- NAVBAR (matches all your other pages) -->
-    <nav class="bg-[#111111] border-b border-[#c8102e]/30 sticky top-0 z-50">
+<body class="min-h-screen flex flex-col">
+    <!-- NAVBAR -->
+    <nav class="glass-panel sticky top-0 z-50 border-b border-[#ff1e38]/20">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-[#c8102e] rounded rotate-45 flex items-center justify-center text-white text-xl font-bold">⚔️</div>
-                <div class="text-3xl font-bold tracking-tighter glow-red">DREADFIELD</div>
-                <div class="text-3xl font-bold tracking-tighter text-white">PVP</div>
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-gradient-to-br from-[#ff1e38] to-[#8b0015] rounded rotate-45 flex items-center justify-center text-white text-xl font-black shadow-[0_0_15px_rgba(255,30,56,0.5)] group-hover:rotate-[225deg] transition-transform duration-700">⚔️</div>
+                <div class="flex flex-col leading-none">
+                    <div class="text-2xl font-black tracking-tighter glow-red">DREADFIELD</div>
+                    <div class="text-sm font-bold tracking-[0.2em] text-gray-400">NETWORK</div>
+                </div>
             </a>
             
-            <div class="flex items-center gap-8 text-sm font-medium uppercase tracking-widest">
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-gray-300">
                 <a href="index.html" class="nav-link">HOME</a>
                 <a href="java.html" class="nav-link">JAVA</a>
                 <a href="bedrock.html" class="nav-link">BEDROCK</a>
                 <a href="store.html" class="nav-link">STORE</a>
                 <a href="pages.html" class="nav-link">FORUMS</a>
-                <a href="discord.html" class="nav-link text-[#c8102e]">DISCORD</a>
+                <a href="discord.html" class="nav-link text-white" style="color: #ff1e38;">DISCORD</a>
             </div>
             
-            <div class="flex items-center gap-2 text-xs uppercase bg-[#1a1a1a] px-4 py-2 rounded border border-[#c8102e]/20">
-                <div class="w-2 h-2 bg-[#c8102e] rounded-full animate-pulse"></div>
+            <div class="flex items-center gap-2 text-xs uppercase bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg border border-[#ff1e38]/30 font-bold">
+                <div class="w-2.5 h-2.5 bg-[#ff1e38] rounded-full animate-pulse shadow-[0_0_10px_rgba(255,30,56,0.8)]"></div>
                 COMMUNITY
             </div>
         </div>
     </nav>
 
-    <div class="flex-1 flex items-center justify-center px-6 py-16">
+    <div class="flex-1 flex items-center justify-center px-6 py-16 relative z-10">
         <div class="max-w-xl w-full text-center">
-            <div class="panel rounded-3xl p-16">
-                <!-- Discord Icon -->
-                <div class="text-8xl mb-8">💬</div>
+            <div class="glass-panel rounded-3xl p-16 relative overflow-hidden border-[#ff1e38]/30">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff1e38] to-transparent"></div>
                 
-                <h1 class="text-6xl font-bold tracking-tighter glow-red mb-3">DREADFIELD DISCORD</h1>
-                <p class="text-2xl text-gray-300 mb-10">Join the arena. Talk strategy.<br>Meet the squad.</p>
+                <!-- Discord Icon -->
+                <div class="text-8xl mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">💬</div>
+                
+                <h1 class="text-5xl md:text-6xl font-black tracking-tighter glow-red mb-3 uppercase">DREADFIELD DISCORD</h1>
+                <p class="text-xl text-gray-300 mb-10 font-light">Join the arena. Talk strategy.<br>Meet the squad.</p>
                 
                 <!-- Redirecting message -->
-                <div id="redirect-status" class="text-[#c8102e] text-xl font-medium flex items-center justify-center gap-3 mb-12">
-                    <div class="w-4 h-4 border-2 border-[#c8102e] border-t-transparent rounded-full animate-spin"></div>
+                <div id="redirect-status" class="text-[#ff1e38] text-xl font-bold flex items-center justify-center gap-3 mb-10 tracking-widest uppercase">
+                    <div class="w-5 h-5 border-2 border-[#ff1e38] border-t-transparent rounded-full animate-spin"></div>
                     REDIRECTING TO DISCORD...
                 </div>
                 
@@ -88,11 +114,11 @@
                 <a id="discord-button" 
                    href="https://discord.com/invite/6DZSj3YTH5"
                    target="_blank"
-                   class="block w-full bg-[#c8102e] hover:bg-[#e02a3f] text-white font-bold py-7 text-2xl rounded-3xl transition-all active:scale-95 shadow-lg">
+                   class="block w-full bg-[#ff1e38] hover:bg-[#ff1e38]/80 text-white font-black py-6 text-xl rounded-2xl transition-transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,30,56,0.3)] tracking-widest uppercase">
                     JOIN DISCORD NOW →
                 </a>
                 
-                <p class="text-xs text-gray-500 mt-10">
+                <p class="text-xs text-gray-500 mt-10 font-mono">
                     You will be taken to our official Discord server instantly.<br>
                     If nothing happens, click the button above.
                 </p>
@@ -101,8 +127,12 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-[#111111] py-8 border-t border-[#c8102e]/10 text-center text-xs text-gray-500">
+    <footer class="glass-panel py-8 border-t border-[#ff1e38]/20 text-center text-xs text-gray-500 mt-auto">
         <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                <div class="w-6 h-6 bg-gradient-to-br from-[#ff1e38] to-[#8b0015] rounded rotate-45 flex items-center justify-center text-white text-[10px] font-black shadow-[0_0_10px_rgba(255,30,56,0.3)]">⚔️</div>
+                <span class="font-bold tracking-widest text-[#ff1e38]">DREADFIELD</span>
+            </div>
             © 2026 Dreadfield PvP • Official Discord
         </div>
     </footer>
@@ -116,10 +146,8 @@
         // Optional: update status text just before redirect
         setTimeout(() => {
             const status = document.getElementById('redirect-status');
-            if (status) status.innerHTML = `✅ OPENING DISCORD...`;
+            if (status) status.innerHTML = `<span class="text-emerald-400">✅ OPENING DISCORD...</span>`;
         }, 1800);
-
-        console.log('%c✅ Dreadfield PvP discord.html loaded – redirecting to official Discord', 'color:#c8102e; font-weight:bold');
     </script>
 </body>
 </html>
