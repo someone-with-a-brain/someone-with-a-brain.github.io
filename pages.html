@@ -221,7 +221,7 @@
         }
         
         // GITHUB SYNC
-        const GITHUB_RAW_URL = "https://raw.githubusercontent.com/someone-with-a-brain/someone-with-a-brain.github.io/main/api_config.json";
+        const GITHUB_API_URL = "https://api.github.com/repos/someone-with-a-brain/someone-with-a-brain.github.io/contents/api_config.json";
 
         let currentUser = null; 
         let API_BASE_URL = null;
@@ -233,10 +233,16 @@
             statusEl.innerHTML = "Fetching secure API routing payload <span class='animate-pulse'>...</span>";
             
             try {
-                const res = await fetch(`${GITHUB_RAW_URL}?nocache=${Date.now()}`); // cache buster
+                const res = await fetch(GITHUB_API_URL, {
+                    headers: { "Accept": "application/vnd.github.v3+json", "Cache-Control": "no-cache" },
+                    cache: 'no-store'
+                });
+                
                 if(!res.ok) throw new Error("Could not fetch API configuration");
                 
-                const data = await res.json();
+                const jsonPayload = await res.json();
+                const decodedText = atob(jsonPayload.content); // Base64 decode
+                const data = JSON.parse(decodedText);
                 
                 if (data.api_url) {
                     API_BASE_URL = data.api_url;
