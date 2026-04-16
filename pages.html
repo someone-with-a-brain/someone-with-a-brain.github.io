@@ -255,8 +255,11 @@
         // ====================== ADMIN VERIFICATION ======================
         async function checkAdminStatus() {
             if (!API_BASE_URL) return;
+            const token = localStorage.getItem('dreadfield_net_key');
             try {
-                const res = await fetch(`${API_BASE_URL}/api/me`);
+                const res = await fetch(`${API_BASE_URL}/api/me`, {
+                    headers: token ? { 'Authorization': token } : {}
+                });
                 if(res.ok) {
                     const data = await res.json();
                     isNetworkAdmin = data.isAdmin;
@@ -359,6 +362,7 @@
             const input = document.getElementById('post-input');
             const btn = document.getElementById('submit-btn');
             const content = input.value.trim();
+            const token = localStorage.getItem('dreadfield_net_key');
             
             if (!content) return;
             if (content.length > 500) {
@@ -374,13 +378,15 @@
             btn.innerHTML = 'PROCESSING...';
             
             try {
+                let headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = token;
+                
                 const res = await fetch(`${API_BASE_URL}/api/posts`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({
                         username: currentUser.username,
                         content: content
-                        // Removed isAdmin from payload because the backend verifies the IP securely!
                     })
                 });
                 
@@ -401,10 +407,13 @@
         
         async function deletePost(id) {
             if (!API_BASE_URL || !confirm("Delete this post?")) return;
+            const token = localStorage.getItem('dreadfield_net_key');
             
             try {
-                // If the user isn't really the admin on the backend, this API call will return 403 Forbidden anyway!
-                const res = await fetch(`${API_BASE_URL}/api/posts/${id}`, { method: 'DELETE' });
+                const res = await fetch(`${API_BASE_URL}/api/posts/${id}`, { 
+                    method: 'DELETE',
+                    headers: token ? { 'Authorization': token } : {}
+                });
                 if(res.ok) {
                     await fetchPosts();
                 } else {
@@ -417,9 +426,13 @@
         
         async function wipeUser(ipToWipe) {
             if (!API_BASE_URL || !confirm("⚠️ Permanently wipe this user?")) return;
+            const token = localStorage.getItem('dreadfield_net_key');
             
             try {
-                const res = await fetch(`${API_BASE_URL}/api/users/${ipToWipe}`, { method: 'DELETE' });
+                const res = await fetch(`${API_BASE_URL}/api/users/${ipToWipe}`, { 
+                    method: 'DELETE',
+                    headers: token ? { 'Authorization': token } : {}
+                });
                 if(res.ok) {
                     alert("User wiped via backend API.");
                     await fetchPosts();

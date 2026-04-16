@@ -3,45 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Panel Gateway</title>
+    <title>Gateway • Network Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #ffffff; font-family: monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .auth-box { border: 1px solid rgba(255, 30, 56, 0.3); background: rgba(15, 15, 15, 0.8); padding: 40px; border-radius: 20px; text-align: center; }
-        .spinner { border: 3px solid rgba(255, 30, 56, 0.1); border-left-color: #ff1e38; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+        body { background-color: #050505; color: #ffffff; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .glass-panel { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255, 30, 56, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); border-radius: 24px; padding: 40px; text-align: center; width: 100%; max-width: 400px; }
+        .spinner { border: 3px solid rgba(255, 30, 56, 0.1); border-left-color: #ff1e38; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .glow-red { text-shadow: 0 0 20px rgba(255, 30, 56, 0.4); }
     </style>
 </head>
 <body>
-    <div class="auth-box">
+
+    <!-- AUTHENTICATION UI -->
+    <div id="auth-ui" class="glass-panel hidden">
+        <div class="text-5xl mb-6">🔑</div>
+        <h2 class="text-3xl font-black mb-2 glow-red uppercase tracking-tight">Security Clearance</h2>
+        <p class="text-gray-400 mb-8 font-light text-sm">Enter the Hidden Key from the backend console.</p>
+        
+        <input type="password" id="key-input" class="w-full bg-black/60 border border-gray-700 focus:border-[#ff1e38] outline-none rounded-xl px-4 py-4 text-center text-lg placeholder-gray-600 mb-6 font-bold" placeholder="Secret Key">
+        
+        <button onclick="saveKeyAndProceed()" class="w-full bg-[#ff1e38] hover:bg-[#ff1e38]/80 text-white font-black py-4 rounded-xl text-sm transition-transform hover:-translate-y-1 tracking-widest uppercase">
+            Authenticate Device
+        </button>
+        <button onclick="resetKey()" class="w-full mt-4 text-xs font-bold text-gray-500 hover:text-white transition-colors tracking-widest uppercase">
+            Clear Existing Key
+        </button>
+    </div>
+
+    <!-- LOADING UI -->
+    <div id="loading-ui" class="glass-panel hidden">
         <div class="spinner"></div>
-        <h2 style="color: #ff1e38; margin-bottom: 10px; font-weight: bold; letter-spacing: 2px;">AUTHENTICATING LOCATION</h2>
-        <p style="color: gray; font-size: 12px;" id="status-text">Fetching secure routing payload...</p>
+        <h2 class="text-xl font-black mb-2 glow-red uppercase tracking-widest text-[#ff1e38]">LINKING TO CORE</h2>
+        <p class="text-gray-500 font-mono text-xs mt-4" id="status-text">Fetching secure routing payload...</p>
     </div>
 
     <script>
         const GITHUB_RAW_URL = "https://raw.githubusercontent.com/someone-with-a-brain/someone-with-a-brain.github.io/main/api_config.json";
+        const KEY_STORAGE = 'dreadfield_net_key';
 
-        async function initializePanel() {
+        function showAuthUI() {
+            document.getElementById('loading-ui').classList.add('hidden');
+            document.getElementById('auth-ui').classList.remove('hidden');
+            document.getElementById('key-input').focus();
+        }
+
+        function showLoadingUI(msg) {
+            document.getElementById('auth-ui').classList.add('hidden');
+            document.getElementById('loading-ui').classList.remove('hidden');
+            document.getElementById('status-text').innerHTML = msg;
+        }
+
+        function saveKeyAndProceed() {
+            const key = document.getElementById('key-input').value.trim();
+            if (key) {
+                localStorage.setItem(KEY_STORAGE, key);
+                executeRouting();
+            }
+        }
+
+        function resetKey() {
+            localStorage.removeItem(KEY_STORAGE);
+            alert("Key cleared. Enter a new key.");
+            document.getElementById('key-input').value = '';
+        }
+
+        async function executeRouting() {
+            const key = localStorage.getItem(KEY_STORAGE);
+            if (!key) {
+                showAuthUI();
+                return;
+            }
+
+            showLoadingUI("Handshaking with API network payload...");
+
             try {
                 const res = await fetch(`${GITHUB_RAW_URL}?nocache=${Date.now()}`);
                 if (!res.ok) throw new Error("Could not find configuration");
                 
                 const data = await res.json();
                 if (data.api_url) {
-                    document.getElementById('status-text').innerHTML = "Handshake complete. Redirecting to network dashboard...";
+                    showLoadingUI("<span class='text-emerald-500 font-bold'>Token applied. Redirecting to restricted dashboard...</span>");
                     setTimeout(() => {
-                        window.location.href = data.api_url;
-                    }, 500);
+                        window.location.href = data.api_url + "?auth=" + encodeURIComponent(key);
+                    }, 800);
                 } else {
-                    document.getElementById('status-text').innerHTML = "System Offline.";
+                    showLoadingUI("System Offline.");
                 }
             } catch (e) {
-                document.getElementById('status-text').innerHTML = "<span style='color:red;'>Access Denied / Core Offline</span>";
+                showLoadingUI("<span style='color:#ff1e38;'>Routing failed / Network Offline</span>");
             }
         }
 
-        document.addEventListener('DOMContentLoaded', initializePanel);
+        document.addEventListener('DOMContentLoaded', executeRouting);
     </script>
 </body>
 </html>
