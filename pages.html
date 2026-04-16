@@ -233,8 +233,8 @@
             statusEl.innerHTML = "Fetching secure API routing payload <span class='animate-pulse'>...</span>";
             
             try {
-                const res = await fetch(GITHUB_API_URL, {
-                    headers: { "Accept": "application/vnd.github.v3+json", "Cache-Control": "no-cache" },
+                const res = await fetch(`${GITHUB_API_URL}?nocache=${Date.now()}`, {
+                    headers: { "Accept": "application/vnd.github.v3+json" },
                     cache: 'no-store'
                 });
                 
