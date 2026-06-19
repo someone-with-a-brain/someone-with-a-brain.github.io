@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broke Mans Arcade</title>
+    <style>
+        /* Modern Dark Arcade Aesthetic */
+        body { 
+            background: #0f0c20; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        h1 { color: #ff4757; font-size: 2.5rem; margin-bottom: 5px; cursor: pointer; }
+        p.subtitle { color: #a4b0be; font-size: 1.1rem; margin-top: 0; }
+        
+        /* Layout Grid for Ads and Content */
+        .layout-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 30px auto;
+            flex-wrap: wrap;
+        }
+
+        /* Interactive Showcase/Arcade Area */
+        .main-stage {
+            flex: 1;
+            min-width: 320px;
+            background: #1e1b3a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 2px solid #2f2a5a;
+            min-height: 450px;
+        }
+
+        /* Game Menu Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Game Selection Cards */
+        .game-card {
+            background: #2f2a5a;
+            padding: 20px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.2s;
+            border: 1px solid #403b75;
+        }
+        .game-card:hover {
+            transform: translateY(-3px);
+            background: #ff4757;
+        }
+
+        /* Fluid Embed Window for Active Games */
+        .game-frame {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        /* Controls Panel below the active game */
+        .game-controls {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .back-btn {
+            background: #ff4757;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Ad Frame Containers */
+        .ad-top { margin: 10px auto 20px auto; min-height: 90px; }
+        .ad-sidebar { width: 300px; min-height: 250px; }
+    </style>
+</head>
+<body>
+
+    <div class="ad-top">
+        <div style="width:728px; height:90px; background:#1a1730; margin:0 auto; border:1px dashed #444; line-height:90px; color:#555;">[728x90 Top Ad Space]</div>
+    </div>
+
+    <h1 onclick="showMenu()">BROKE MANS ARCADE</h1>
+    <p class="subtitle">Play games and watch ads to help reach the goal of $10,000</p>
+
+    <div class="layout-container">
+        
+        <div class="main-stage" id="mainStage">
+            </div>
+
+        <div class="ad-sidebar">
+            <div style="width:300px; height:250px; background:#1a1730; border:1px dashed #444; line-height:250px; color:#555;">[300x250 Sidebar Ad Space]</div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========================================================
+        // 🕹️ YOUR GAME REGISTRY (MANUAL LIST)
+        // Whenever you add a game to the /games/ folder, just type 
+        // its filename here exactly (leave off the .html part).
+        // ========================================================
+        const gamesList = ["2048", "bitlife", "chess"];
+
+
+
+
+        const mainStage = document.getElementById('mainStage');
+
+        // Function to build and show the homepage selection menu
+        function showMenu() {
+            let html = `<h2 style="margin-top:0; color:#2ed573;">Select a Game to Play</h2>`;
+            html += `<div class="game-grid">`;
+            
+            gamesList.forEach(game => {
+                html += `
+                    <div class="game-card" onclick="launchGame('${game}')">
+                        🕹️ ${game}
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            mainStage.innerHTML = html;
+        }
+
+        // Function to load the game into an iframe without unloading the ad-filled main page
+        function launchGame(gameName) {
+            mainStage.innerHTML = `
+                <div class="game-controls">
+                    <button class="back-btn" onclick="showMenu()">⬅ Back to Menu</button>
+                    <span style="margin-left: 15px; font-weight: bold; color: #2ed573;">Now Playing: ${gameName}</span>
+                </div>
+                <iframe class="game-frame" src="games/${gameName}.html"></iframe>
+            `;
+        }
+
+        // Run the menu immediately on page initialization
+        showMenu();
+    </script>
+</body>
+</html>
