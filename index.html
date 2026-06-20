@@ -2,159 +2,606 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broke Mans Arcade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Backrooms: Endless Echoes</title>
     <style>
-        /* Modern Dark Arcade Aesthetic */
-        body { 
-            background: #0f0c20; 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            text-align: center; 
-            margin: 0; 
-            padding: 20px; 
-        }
-        h1 { color: #ff4757; font-size: 2.5rem; margin-bottom: 5px; cursor: pointer; }
-        p.subtitle { color: #a4b0be; font-size: 1.1rem; margin-top: 0; }
-        
-        /* Layout Grid for Ads and Content */
-        .layout-container {
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            color: #fff;
+            user-select: none;
+            touch-action: none; /* Prevents mobile browser scrolling */
             display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #game-container {
+            flex: 1; /* Takes up all remaining space above the ad */
+            position: relative;
+            overflow: hidden;
+            background-color: #000;
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px; background: rgba(255,255,255,0.8);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; z-index: 10;
+        }
+        #ui {
+            position: absolute; top: 10px; left: 10px; z-index: 10;
+            text-shadow: 2px 2px 4px #000;
+        }
+        #shop-btn {
+            position: absolute; top: 10px; right: 10px; padding: 8px 16px;
+            background: #cda100; color: #000; border: none; cursor: pointer;
+            font-weight: bold; font-family: inherit; font-size: 14px; z-index: 10;
+        }
+        #shop-btn:hover { background: #e6b800; }
+        #shop-panel {
+            display: none; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: rgba(20, 18, 0, 0.95);
+            border: 2px solid #cda100; padding: 20px; z-index: 20; text-align: center;
+            width: 80%; max-width: 300px;
+        }
+        #shop-panel h2 { color: #cda100; margin-top: 0; }
+        .upgrade-btn {
+            display: block; width: 100%; margin: 8px 0; padding: 8px;
+            background: #333; color: #fff; border: 1px solid #cda100;
+            cursor: pointer; font-family: inherit; font-size: 14px;
+        }
+        .upgrade-btn:hover { background: #555; }
+        #message {
+            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+            color: #ff0000; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 4px #000;
+            z-index: 10; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 30;
+        }
+        .overlay h1 { color: #cda100; font-size: 32px; margin-bottom: 10px; }
+        .overlay p { margin-bottom: 20px; text-align: center; max-width: 600px; line-height: 1.5; padding: 0 20px; font-size: 14px;}
+        .overlay button {
+            padding: 15px 30px; font-size: 20px; background: #cda100; color: #000;
+            border: none; cursor: pointer; font-family: inherit; font-weight: bold;
+        }
+        #pause-screen { display: none; }
+        #death-screen { display: none; }
+        #ammo-display {
+            position: absolute; bottom: 10px; right: 10px; font-size: 18px;
+            z-index: 10; text-shadow: 2px 2px 4px #000;
+        }
+        
+        /* Mobile Controls CSS */
+        #mobile-controls {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 15; pointer-events: none;
+        }
+        .mobile-btn {
+            pointer-events: auto; position: absolute; background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
+            width: 60px; height: 60px; text-align: center; line-height: 60px;
+            font-weight: bold; font-size: 16px; color: #fff;
+        }
+        #btn-shoot { bottom: 20px; right: 20px; background: rgba(255,0,0,0.4); border-color: rgba(255,0,0,0.6); }
+        #btn-reload { bottom: 90px; right: 30px; background: rgba(0,100,255,0.4); border-color: rgba(0,100,255,0.6); font-size: 12px; }
+
+        /* Ad Banner CSS */
+        #ad-banner {
+            flex-shrink: 0; /* Prevents ad from being squeezed */
+            background: #111;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: flex-start;
-            gap: 25px;
-            max-width: 1200px;
-            margin: 30px auto;
-            flex-wrap: wrap;
+            padding: 10px 0; /* Adds space above and below ad so it doesn't clip */
+            min-height: 70px;
+            box-sizing: border-box;
         }
-
-        /* Interactive Showcase/Arcade Area */
-        .main-stage {
-            flex: 1;
-            min-width: 320px;
-            background: #1e1b3a;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 2px solid #2f2a5a;
-            min-height: 450px;
-        }
-
-        /* Game Menu Grid */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        /* Game Selection Cards */
-        .game-card {
-            background: #2f2a5a;
-            padding: 20px 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s, background 0.2s;
-            border: 1px solid #403b75;
-        }
-        .game-card:hover {
-            transform: translateY(-3px);
-            background: #ff4757;
-        }
-
-        /* Fluid Embed Window for Active Games */
-        .game-frame {
-            width: 100%;
-            height: 500px;
-            border: none;
-            border-radius: 8px;
-            background: #000;
-        }
-
-        /* Controls Panel below the active game */
-        .game-controls {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .back-btn {
-            background: #ff4757;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        /* Ad Frame Containers */
-        .ad-top { margin: 10px auto 20px auto; min-height: 90px; }
-        .ad-sidebar { width: 300px; min-height: 250px; }
     </style>
 </head>
 <body>
 
-    <div class="ad-top">
-        <div style="width:728px; height:90px; background:#1a1730; margin:0 auto; border:1px dashed #444; line-height:90px; color:#555;">[728x90 Top Ad Space]</div>
-    </div>
-
-    <h1 onclick="showMenu()">BROKE MANS ARCADE</h1>
-    <p class="subtitle">Play games and watch ads to help reach the goal of $10,000</p>
-
-    <div class="layout-container">
+    <div id="game-container">
+        <div id="crosshair"></div>
+        <div id="ui">
+            <h3>Cash: $<span id="cash">0</span></h3>
+            <h3 style="color: #ff3333">Health: <span id="health">100</span></h3>
+            <h3 style="color: #ffffff">Wave: <span id="wave">1</span></h3>
+            <p style="font-size: 12px; color: #ccc;">[WASD/Arrows] Move | [Drag] Look | [LMB] Shoot | [R] Reload | [E] Shop</p>
+        </div>
+        <div id="ammo-display">AMMO: <span id="ammo">12</span> / 12</div>
+        <button id="shop-btn">SHOP (E)</button>
         
-        <div class="main-stage" id="mainStage">
-            </div>
-
-        <div class="ad-sidebar">
-            <div style="width:300px; height:250px; background:#1a1730; border:1px dashed #444; line-height:250px; color:#555;">[300x250 Sidebar Ad Space]</div>
+        <div id="shop-panel">
+            <h2>UPGRADE SHOP</h2>
+            <p>Cash: $<span id="shop-cash">0</span></p>
+            <button class="upgrade-btn" onclick="buyUpgrade('speed')">Speed - $100</button>
+            <button class="upgrade-btn" onclick="buyUpgrade('damage')">Damage - $150</button>
+            <button class="upgrade-btn" onclick="buyUpgrade('maxHealth')">Max Health - $200</button>
+            <button class="upgrade-btn" onclick="buyUpgrade('income')">Income +25% - $300</button>
+            <button class="upgrade-btn" onclick="closeShop()" style="background: #800000; border-color: #800000;">CLOSE (E)</button>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div id="start-screen" class="overlay">
+            <h1>THE BACKROOMS</h1>
+            <p>Entities are hunting you. Shoot them, earn cash, upgrade your stats, and survive.</p>
+            <button id="start-btn">CLICK TO ENTER</button>
         </div>
 
+        <div id="pause-screen" class="overlay">
+            <h1>PAUSED</h1>
+            <p>Click the screen to resume hunting.</p>
+        </div>
+
+        <div id="death-screen" class="overlay">
+            <h1 style="color: #ff0000;">YOU DIED</h1>
+            <p>You were consumed by the Backrooms.</p>
+            <button onclick="location.reload()">TRY AGAIN</button>
+        </div>
+
+        <!-- Mobile UI -->
+        <div id="mobile-controls">
+            <div id="btn-shoot" class="mobile-btn">FIRE</div>
+            <div id="btn-reload" class="mobile-btn">RLD</div>
+        </div>
     </div>
 
-    <script>
-        // ========================================================
-        // 🕹️ YOUR GAME REGISTRY (MANUAL LIST)
-        // Whenever you add a game to the /games/ folder, just type 
-        // its filename here exactly (leave off the .html part).
-        // ========================================================
-        const gamesList = ["2048", "bitlife", "chess"];
+    <!-- AD BANNER -->
+    <div id="ad-banner">
+        <!-- BEGIN AADS AD UNIT 2444926 -->
+        <div id="frame" style="width: 100%; margin: auto; position: relative; z-index: 99998;">
+            <iframe data-aa='2444926' src='//acceptable.a-ads.com/2444926/?size=Adaptive'
+                                style='border:0; padding:0; width:70%; height:auto; overflow:hidden; display:block; margin:auto'></iframe>
+        </div>
+        <!-- END AADS AD UNIT 2444926 -->
+    </div>
 
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.150.0/build/three.module.js"
+            }
+        }
+    </script>
 
+    <script type="module">
+        import * as THREE from 'three';
 
+        // Game State
+        let cash = 0, health = 100, wave = 1, isPlaying = false, shopOpen = false;
+        const keys = { w: false, a: false, s: false, d: false, shift: false };
 
-        const mainStage = document.getElementById('mainStage');
+        // RPG Stats
+        const stats = { speed: 15, damage: 25, maxHealth: 100, incomeMultiplier: 1.0, fireRate: 250 };
 
-        // Function to build and show the homepage selection menu
-        function showMenu() {
-            let html = `<h2 style="margin-top:0; color:#2ed573;">Select a Game to Play</h2>`;
-            html += `<div class="game-grid">`;
+        // Mobile Detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window);
+
+        // Three.js Setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0d0b00);
+        scene.fog = new THREE.Fog(0x0d0b00, 5, 60);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 0);
+        camera.rotation.order = 'YXZ'; // Required for custom FPS camera math
+
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('game-container').appendChild(renderer.domElement);
+
+        // --- LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffee00, 0.4);
+        scene.add(ambientLight);
+
+        const playerLight = new THREE.PointLight(0xffee00, 2.5, 35);
+        camera.add(playerLight);
+        playerLight.position.set(0, 1, 0);
+        scene.add(camera);
+
+        // --- MAP GENERATION ---
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcda100, roughness: 0.8 });
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x6b5b3f, roughness: 1 });
+        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x8f8f6f, roughness: 0.9 });
+        const lightFixtureMat = new THREE.MeshBasicMaterial({ color: 0xffffcc });
+
+        const mazeSize = 25, cellSize = 8, wallHeight = 3;
+
+        function createBackrooms() {
+            const planeSize = mazeSize * cellSize;
+            const floorGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+            const floor = new THREE.Mesh(floorGeo, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
+
+            const ceiling = new THREE.Mesh(floorGeo, ceilingMaterial);
+            ceiling.rotation.x = Math.PI / 2;
+            ceiling.position.y = wallHeight;
+            scene.add(ceiling);
+
+            const wallGeo = new THREE.BoxGeometry(cellSize, wallHeight, 0.5);
+            const wallGeo2 = new THREE.BoxGeometry(0.5, wallHeight, cellSize);
+            const pillarGeo = new THREE.BoxGeometry(1, wallHeight, 1);
+            const panelGeo = new THREE.PlaneGeometry(2, 0.5);
+
+            const halfMaze = mazeSize / 2;
+
+            for (let i = 0; i < mazeSize; i++) {
+                for (let j = 0; j < mazeSize; j++) {
+                    const x = i * cellSize - (halfMaze * cellSize);
+                    const z = j * cellSize - (halfMaze * cellSize);
+
+                    if (Math.abs(i - halfMaze) < 2 && Math.abs(j - halfMaze) < 2) continue;
+
+                    if (i > 0 && i < mazeSize && j > 0 && j < mazeSize) {
+                        const pillar = new THREE.Mesh(pillarGeo, wallMaterial);
+                        pillar.position.set(x, wallHeight / 2, z);
+                        scene.add(pillar);
+                    }
+
+                    if (i < mazeSize - 1 && Math.random() < 0.4) {
+                        const wall = new THREE.Mesh(wallGeo, wallMaterial);
+                        wall.position.set(x + cellSize / 2, wallHeight / 2, z);
+                        scene.add(wall);
+                    }
+
+                    if (j < mazeSize - 1 && Math.random() < 0.4) {
+                        const wall = new THREE.Mesh(wallGeo2, wallMaterial);
+                        wall.position.set(x, wallHeight / 2, z + cellSize / 2);
+                        scene.add(wall);
+                    }
+
+                    if (Math.random() < 0.6) {
+                        const panel = new THREE.Mesh(panelGeo, lightFixtureMat);
+                        panel.rotation.x = Math.PI / 2;
+                        panel.position.set(x, wallHeight + 0.01, z);
+                        scene.add(panel);
+                    }
+                }
+            }
+        }
+        createBackrooms();
+
+        // --- MONSTERS ---
+        const monsters = [];
+        const monsterGeo = new THREE.BoxGeometry(1, 2.5, 1);
+        const monsterMat = new THREE.MeshStandardMaterial({ color: 0x330000, roughness: 0.5, emissive: 0x110000 });
+
+        class Monster {
+            constructor(waveNum) {
+                const mesh = new THREE.Mesh(monsterGeo, monsterMat);
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 30 + Math.random() * 20;
+                mesh.position.set(
+                    camera.position.x + Math.cos(angle) * distance,
+                    1.25,
+                    camera.position.z + Math.sin(angle) * distance
+                );
+                scene.add(mesh);
+                this.mesh = mesh;
+                this.health = 50 + (waveNum * 10);
+                this.speed = 3 + (waveNum * 0.2);
+                this.damage = 10 + (waveNum * 2);
+                this.lastAttack = 0;
+            }
+        }
+
+        function spawnWave() {
+            const numMonsters = 2 + wave;
+            for(let i=0; i<numMonsters; i++) monsters.push(new Monster(wave));
+            showMessage(`WAVE ${wave}`, 2000);
+        }
+
+        // --- SHOOTING ---
+        const raycaster = new THREE.Raycaster();
+        const gunGeo = new THREE.BoxGeometry(0.1, 0.1, 0.5);
+        const gunMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
+        const gun = new THREE.Mesh(gunGeo, gunMat);
+        camera.add(gun);
+        gun.position.set(0.3, -0.3, -0.5);
+
+        let lastShotTime = 0, ammo = 12, maxAmmo = 12, isReloading = false;
+
+        function shoot() {
+            if (!isPlaying || shopOpen || isReloading || ammo <= 0) return;
+            const now = Date.now();
+            if (now - lastShotTime < stats.fireRate) return;
+            lastShotTime = now;
+            ammo--;
+            document.getElementById('ammo').innerText = ammo;
+
+            gun.material.color.setHex(0xffff00);
+            setTimeout(() => gun.material.color.setHex(0x333333), 50);
+
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const monsterMeshes = monsters.map(m => m.mesh);
+            const intersects = raycaster.intersectObjects(monsterMeshes);
+
+            if (intersects.length > 0) {
+                const hitMesh = intersects[0].object;
+                const monster = monsters.find(m => m.mesh === hitMesh);
+                if (monster) {
+                    monster.health -= stats.damage;
+                    monster.mesh.material.emissive.setHex(0xff0000);
+                    setTimeout(() => monster.mesh.material.emissive.setHex(0x110000), 100);
+                }
+            }
+            if (ammo <= 0) reload();
+        }
+
+        function reload() {
+            if (isReloading) return;
+            isReloading = true;
+            showMessage("RELOADING...", 1500);
+            setTimeout(() => {
+                ammo = maxAmmo;
+                isReloading = false;
+                document.getElementById('ammo').innerText = ammo;
+            }, 1500);
+        }
+
+        // --- UI & SHOP ---
+        function updateUI() {
+            document.getElementById('cash').innerText = Math.floor(cash);
+            document.getElementById('health').innerText = Math.floor(health);
+            document.getElementById('wave').innerText = wave;
+            document.getElementById('shop-cash').innerText = Math.floor(cash);
+        }
+
+        function showMessage(text, duration) {
+            const msgEl = document.getElementById('message');
+            msgEl.innerText = text;
+            msgEl.style.opacity = 1;
+            setTimeout(() => msgEl.style.opacity = 0, duration);
+        }
+
+        window.buyUpgrade = function(type) {
+            switch(type) {
+                case 'speed': if (cash >= 100) { cash -= 100; stats.speed += 2; showMessage("Speed Upgraded!", 1000); } break;
+                case 'damage': if (cash >= 150) { cash -= 150; stats.damage += 10; showMessage("Damage Upgraded!", 1000); } break;
+                case 'maxHealth': if (cash >= 200) { cash -= 200; stats.maxHealth += 25; health = stats.maxHealth; showMessage("Health Upgraded!", 1000); } break;
+                case 'income': if (cash >= 300) { cash -= 300; stats.incomeMultiplier += 0.25; showMessage("Income Upgraded!", 1000); } break;
+            }
+            updateUI();
+        }
+
+        window.closeShop = function() {
+            shopOpen = false;
+            document.getElementById('shop-panel').style.display = 'none';
+            document.getElementById('shop-btn').style.display = 'block';
+        }
+
+        function toggleShop() {
+            if (!isPlaying) return;
+            shopOpen = !shopOpen;
+            if (shopOpen) {
+                document.getElementById('shop-panel').style.display = 'block';
+                document.getElementById('shop-btn').style.display = 'none';
+                document.getElementById('pause-screen').style.display = 'none';
+                updateUI();
+            } else {
+                closeShop();
+            }
+        }
+
+        // --- CUSTOM CAMERA CONTROLLER (Fixes Sandbox & Mobile) ---
+        let cameraYaw = 0, cameraPitch = 0;
+        let isDesktopDragging = false;
+        
+        // Mobile Touch State
+        let touchMoveId = null, touchLookId = null;
+        let moveTouchStartX = 0, moveTouchStartY = 0;
+
+        function updateCameraRotation(deltaX, deltaY) {
+            cameraYaw -= deltaX * 0.002;
+            cameraPitch -= deltaY * 0.002;
+            cameraPitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraPitch));
+            camera.rotation.y = cameraYaw;
+            camera.rotation.x = cameraPitch;
+        }
+
+        // Desktop Events
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            if (!isPlaying || shopOpen) return;
+            isDesktopDragging = true;
+        });
+
+        window.addEventListener('mouseup', () => { isDesktopDragging = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isPlaying || shopOpen) return;
+            if (isDesktopDragging && !isMobile) {
+                updateCameraRotation(e.movementX, e.movementY);
+            }
+        });
+
+        renderer.domElement.addEventListener('click', () => {
+            if (!isPlaying || shopOpen || isMobile) return;
+            shoot();
+        });
+
+        // Mobile Events & Setup
+        if (isMobile) {
+            document.getElementById('mobile-controls').style.display = 'block';
+            document.getElementById('crosshair').style.display = 'none'; // Use center of screen drag instead
             
-            gamesList.forEach(game => {
-                html += `
-                    <div class="game-card" onclick="launchGame('${game}')">
-                        🕹️ ${game}
-                    </div>
-                `;
+            // Joystick / Move (Left Side)
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                if (!isPlaying || shopOpen) return;
+                for (let touch of e.changedTouches) {
+                    if (touch.clientX < window.innerWidth / 2 && touchMoveId === null) {
+                        touchMoveId = touch.identifier;
+                        moveTouchStartX = touch.clientX;
+                        moveTouchStartY = touch.clientY;
+                    } else if (touch.clientX >= window.innerWidth / 2 && touchLookId === null) {
+                        touchLookId = touch.identifier;
+                    }
+                }
             });
-            
-            html += `</div>`;
-            mainStage.innerHTML = html;
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                e.preventDefault(); // Stop scrolling
+                if (!isPlaying) return;
+                for (let touch of e.changedTouches) {
+                    if (touch.identifier === touchMoveId) {
+                        // Calculate movement vector
+                        const dx = touch.clientX - moveTouchStartX;
+                        const dy = touch.clientY - moveTouchStartY;
+                        keys.w = dy < -20; // Swipe up
+                        keys.s = dy > 20;  // Swipe down
+                        keys.a = dx < -20; // Swipe left
+                        keys.d = dx > 20;  // Swipe right
+                    }
+                    if (touch.identifier === touchLookId) {
+                        // Look around
+                        updateCameraRotation(touch.clientX - (touch.clientX - touch.movementX), touch.clientY - (touch.clientY - touch.movementY));
+                    }
+                }
+            });
+
+            const resetMoveTouch = (e) => {
+                for (let touch of e.changedTouches) {
+                    if (touch.identifier === touchMoveId) {
+                        touchMoveId = null;
+                        keys.w = false; keys.s = false; keys.a = false; keys.d = false;
+                    }
+                    if (touch.identifier === touchLookId) {
+                        touchLookId = null;
+                    }
+                }
+            };
+
+            renderer.domElement.addEventListener('touchend', resetMoveTouch);
+            renderer.domElement.addEventListener('touchcancel', resetMoveTouch);
+
+            // Mobile Buttons
+            document.getElementById('btn-shoot').addEventListener('touchstart', (e) => { e.stopPropagation(); shoot(); });
+            document.getElementById('btn-reload').addEventListener('touchstart', (e) => { e.stopPropagation(); reload(); });
         }
 
-        // Function to load the game into an iframe without unloading the ad-filled main page
-        function launchGame(gameName) {
-            mainStage.innerHTML = `
-                <div class="game-controls">
-                    <button class="back-btn" onclick="showMenu()">⬅ Back to Menu</button>
-                    <span style="margin-left: 15px; font-weight: bold; color: #2ed573;">Now Playing: ${gameName}</span>
-                </div>
-                <iframe class="game-frame" src="games/${gameName}.html"></iframe>
-            `;
+        // Keyboard Events
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = true;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = true;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = true;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = true;
+            if (e.code === 'ShiftLeft') keys.shift = true;
+            if (e.code === 'KeyE') toggleShop();
+            if (e.code === 'KeyR') reload();
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = false;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = false;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = false;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
+            if (e.code === 'ShiftLeft') keys.shift = false;
+        });
+
+        // --- START / DEATH ---
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').style.display = 'none';
+            isPlaying = true;
+            spawnWave();
+        });
+
+        document.getElementById('shop-btn').addEventListener('click', toggleShop);
+
+        function gameOver() {
+            isPlaying = false;
+            keys.w = false; keys.a = false; keys.s = false; keys.d = false;
+            document.getElementById('ui').style.display = 'none';
+            document.getElementById('shop-btn').style.display = 'none';
+            document.getElementById('ammo-display').style.display = 'none';
+            document.getElementById('mobile-controls').style.display = 'none';
+            document.getElementById('death-screen').style.display = 'flex';
         }
 
-        // Run the menu immediately on page initialization
-        showMenu();
+        // --- GAME LOOP ---
+        const clock = new THREE.Clock();
+        const direction = new THREE.Vector3();
+        const rightDirection = new THREE.Vector3();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isPlaying && !shopOpen) {
+                const delta = clock.getDelta();
+                const speed = keys.shift ? stats.speed * 1.5 : stats.speed;
+                
+                camera.getWorldDirection(direction);
+                direction.y = 0;
+                direction.normalize();
+                rightDirection.crossVectors(camera.up, direction).normalize();
+
+                if (keys.w) camera.position.addScaledVector(direction, speed * delta);
+                if (keys.s) camera.position.addScaledVector(direction, -speed * delta);
+                if (keys.a) camera.position.addScaledVector(rightDirection, speed * delta);
+                if (keys.d) camera.position.addScaledVector(rightDirection, -speed * delta);
+
+                const bound = (mazeSize * cellSize)/2 - 2;
+                camera.position.x = Math.max(-bound, Math.min(bound, camera.position.x));
+                camera.position.z = Math.max(-bound, Math.min(bound, camera.position.z));
+                camera.position.y = 2;
+
+                const playerPos = camera.position.clone();
+                for (let i = monsters.length - 1; i >= 0; i--) {
+                    const mon = monsters[i];
+                    const monDir = playerPos.sub(mon.mesh.position).normalize();
+                    mon.mesh.position.addScaledVector(monDir, mon.speed * delta);
+                    mon.mesh.lookAt(camera.position.x, 1.25, camera.position.z);
+
+                    const distToPlayer = camera.position.distanceTo(mon.mesh.position);
+                    if (distToPlayer < 2.5) {
+                        const now = Date.now();
+                        if (now - mon.lastAttack > 500) {
+                            health -= mon.damage;
+                            mon.lastAttack = now;
+                            showMessage(`-${mon.damage} HP`, 300);
+                            if (health <= 0) gameOver();
+                        }
+                    }
+
+                    if (mon.health <= 0) {
+                        scene.remove(mon.mesh);
+                        monsters.splice(i, 1);
+                        const cashEarned = (25 + (wave * 5)) * stats.incomeMultiplier;
+                        cash += cashEarned;
+                        showMessage(`+$${Math.floor(cashEarned)}`, 300);
+                    }
+                }
+
+                if (monsters.length === 0) {
+                    wave++;
+                    health = Math.min(stats.maxHealth, health + 25);
+                    spawnWave();
+                }
+                updateUI();
+            } else {
+                clock.getDelta();
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onResize() {
+            const container = document.getElementById('game-container');
+            const w = Math.max(1, container.clientWidth);
+            const h = Math.max(1, container.clientHeight);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
+        animate();
     </script>
 </body>
 </html>
